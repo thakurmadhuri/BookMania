@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Books;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Orders extends Model
 {
@@ -25,4 +26,9 @@ class Orders extends Model
         'state',
         'country',
     ];
+
+    public function books()
+    {
+        return $this->hasMany(Books::class);
+    }
 }
