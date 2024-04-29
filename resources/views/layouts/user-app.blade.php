@@ -15,6 +15,7 @@
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -35,13 +36,13 @@
                     @guest
                     @else
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('users') }}">{{ __('Users') }}</a>
+                            <a class="nav-link" href="{{ route('profile') }}">{{ __('Profile') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('categories') }}">{{ __('Books Categories') }}</a>
+                            <a class="nav-link" href="{{ route('all-books') }}">{{ __('Books') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('books') }}">{{ __('Books') }}</a>
+                            <a class="nav-link" href="{{ route('cart') }}">{{ __('Cart') }}</a>
                         </li>
                         @endguest
                     </ul>
