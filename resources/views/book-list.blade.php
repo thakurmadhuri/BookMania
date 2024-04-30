@@ -16,7 +16,7 @@
 
                     <div class="row row-cols-1 row-cols-md-3 g-4">
                         @foreach($books as $book)
-                        <!-- @dd($cart) -->
+                       
                         <div class="col">
                             <div class="card h-100">
                                 <img src="{{ asset('images/book1.jpg') }}" class="card-img-top" alt="{{$book->name}}">
@@ -87,7 +87,6 @@ $(document).ready(function() {
     function addToCart(bookId, qty) {
         price = $("#price-" + bookId + "").val();
         total=price*qty;
-        console.log(total);
         $.ajax({
             url: '/store-cart', // Replace with the actual URL for saving the cart
             type: 'POST',

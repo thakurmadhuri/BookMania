@@ -46,10 +46,11 @@ class BooksController extends Controller
 
     public function list(){
         $user=Auth::user();
-        $cart = Cart::with('cartdetails')->where("user_id",$user->id)->get();
+        // $cart = Cart::with('cartdetails')->where("user_id",$user->id)->get();
+        // dd($cart);
 
         $books = Books::all();
-        return view("book-list",compact("books","cart"));
+        return view("book-list",compact("books"));
     }
 
 }
