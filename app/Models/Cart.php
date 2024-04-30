@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\CartDetails;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -17,8 +18,8 @@ class Cart extends Model
         'user_id',
     ];
 
-    public function cartdetails()
+    public function cartdetails():HasMany
     {
-        return $this->hasMany(CartDetails::class);
+        return $this->hasMany(CartDetails::class,'cart_id', 'id');
     }
 }

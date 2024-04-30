@@ -52,6 +52,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('all-books',  [BooksController::class, 'list'])->name('all-books');
         Route::get('cart',  [CartController::class, 'index'])->name('cart');
         Route::post('store-cart',  [CartController::class, 'store'])->name('store-cart');
+        Route::get('checkout',  [CartController::class, 'checkout'])->name('checkout');
+        Route::post('add-address',  [CartController::class, 'addAddress'])->name('add-address');
      });
 
  });
