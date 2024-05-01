@@ -64,7 +64,7 @@
                                                 class="col-md-4 col-form-label text-md-end">{{ __('Phone Number') }}</label>
 
                                             <div class="col-md-6">
-                                                <input id="mobile" type="tel" pattern="/^d{10}$/"
+                                                <input id="mobile" type="tel"
                                                     class="form-control @error('mobile') is-invalid @enderror"
                                                     name="mobile" value="{{ old('mobile') }}" required
                                                     autocomplete="mobile" autofocus>
@@ -139,7 +139,7 @@
                                                 <select id="state" name="state" class="form-select" required autofocus>
                                                     <option value="">Select State</option>
                                                     @foreach($states as $code => $name)
-                                                    <option value="{{ $code }}">{{ $name }}</option>
+                                                    <option value="{{ $name }}">{{ $name }}</option>
                                                     @endforeach
                                                 </select>
 
@@ -169,7 +169,7 @@
                                             </div>
                                         </div>
 
-                                        <div class=" d-flex justify-content-center"">
+                                        <div class=" d-flex justify-content-center">
                                             <button class=" btn btn-success save-address ">Save Address</button>
                                         </div>
 
@@ -178,187 +178,205 @@
                             </div>
                         </div>
                         <div class=" accordion-item">
-                                            <h2 class="accordion-header" id="headingTwo">
-                                                <button class="accordion-button collapsed" type="button"
-                                                    data-bs-toggle="collapse" data-bs-target="#collapseTwo"
-                                                    aria-expanded="false" aria-controls="collapseTwo">
-                                                    Order Details
-                                                </button>
-                                            </h2>
-                                            <div id="collapseTwo" class="accordion-collapse collapse"
-                                                aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                                                <div class="accordion-body">
-                                                    @foreach($cart as $item)
-                                                    @foreach($item['cartdetails'] as $book)
-                                                    <div class="card mb-3">
-                                                        <div class="row g-0">
-                                                            <div class="col-md-4">
-                                                                <img src="{{ asset('images/book1.jpg') }}"
-                                                                    class="img-fluid rounded-start" alt="...">
-                                                            </div>
-                                                            <div class="col-md-8">
-                                                                <div class="card-body">
-                                                                    <h5 class="card-title">{{$book->name}}</h5>
-                                                                    <p class="card-text">By {{$book->author}}</p>
-                                                                    <p class="card-text">{{$book->description}}</p>
-                                                                    <div class="d-flex justify-content-between">
-                                                                        <p class="card-text">
-                                                                            <small class="text-muted">Quantity =
-                                                                                {{$book->qty}}</small>
-                                                                        </p>
-                                                                        <p class="card-text">
-                                                                            <small class="text-muted">Quantity =
-                                                                                {{$book->total_book_price}}</small>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    @endforeach
-                                                    @endforeach
-
-                                                    <div class="d-flex justify-content-center">
-                                                        <p> <span class="fw-bold">Total Amount = </span>
-                                                            {{$cart[0]['total_price']}}</p>
-                                                    </div>
-                                                    <div class="d-flex justify-content-center">
-                                                        <br><button class="btn btn-success mb-2 confirm"> Confirm
-                                                            Order</button>
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Order Details
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                                data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    @foreach($cart as $item)
+                                    @foreach($item['cartdetails'] as $book)
+                                    <div class="card mb-3">
+                                        <div class="row g-0">
+                                            <div class="col-md-4">
+                                                <img src="{{ asset('images/book1.jpg') }}"
+                                                    class="img-fluid rounded-start" alt="...">
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">{{$book->name}}</h5>
+                                                    <p class="card-text">By {{$book->author}}</p>
+                                                    <p class="card-text">{{$book->description}}</p>
+                                                    <div class="d-flex justify-content-between">
+                                                        <p class="card-text">
+                                                            <small class="text-muted">Quantity =
+                                                                {{$book->qty}}</small>
+                                                        </p>
+                                                        <p class="card-text">
+                                                            <small class="text-muted">Quantity =
+                                                                {{$book->total_book_price}}</small>
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="accordion-item">
-                                            <h2 class="accordion-header" id="headingThree">
-                                                <button class="accordion-button collapsed" type="button"
-                                                    data-bs-toggle="collapse" data-bs-target="#collapseThree"
-                                                    aria-expanded="false" aria-controls="collapseThree">
-                                                    Payment Method
-                                                </button>
-                                            </h2>
-                                            <div id="collapseThree" class="accordion-collapse collapse"
-                                                aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-                                                <div class="accordion-body">
-                                                    <div class="d-flex justify-content-evenly mb-3">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="paymentmode" id="cash" value="cash" checked>
-                                                            <label class="form-check-label" for="cash">
-                                                                Cash On Delivery
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio"
-                                                                name="paymentmode" id="online" value="online" disabled>
-                                                            <label class="form-check-label" for="online">
-                                                                Stripe
-                                                            </label>
-                                                        </div>
-                                                    </div>
+                                    </div>
+                                    @endforeach
+                                    @endforeach
 
-                                                    <div class="d-flex justify-content-center">
-                                                        <br><button class="btn btn-success mb-2 place"> Place
-                                                            Order</button>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="d-flex justify-content-center">
+                                        <p> <span class="fw-bold">Total Amount = </span>
+                                            {{$cart[0]['total_price']}}</p>
+                                    </div>
+                                    <div class="d-flex justify-content-center">
+                                        <br><button class="btn btn-success mb-2 confirm"> Confirm
+                                            Order</button>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    Payment Method
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                                data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <div class="d-flex justify-content-evenly mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="paymentmode" id="cash"
+                                                value="cash" checked>
+                                            <label class="form-check-label" for="cash">
+                                                Cash On Delivery
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="paymentmode" id="online"
+                                                value="online" disabled>
+                                            <label class="form-check-label" for="online">
+                                                Stripe
+                                            </label>
+                                        </div>
+                                    </div>
 
+                                    <div class="d-flex justify-content-center">
+                                        <br><button class="btn btn-success mb-2 place"> Place
+                                            Order</button>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
-            <script>
-            $(document).ready(function() {
-                $(".confirm").click(function() {
-                    $('#collapseTwo').removeClass(
-                        'show');
-                    $('#collapseTwo').prev('.accordion-header').find('button')
-                        .addClass(
-                            'collapsed');
-                    $('#collapseTwo').attr('aria-expanded',
-                        'false');
+<script>
+$(document).ready(function() {
+    // disableAccordian();
 
-                    $('#collapseThree').addClass(
-                        'show');
-                    $('#collapseThree').prev('.accordion-header').find('button')
-                        .removeClass(
-                            'collapsed');
-                    $('#collapseThree').attr('aria-expanded', 'true');
-                });
+    function disableAccordian() {
+        $('#headingTwo .accordion-button').attr('data-bs-toggle', '');
+        $('#headingTwo .accordion-button').addClass('disabled');
+        $('#headingTwo .accordion-button').attr('aria-disabled', 'true');
 
-                $(".place").click(function() {
-                    $.ajax({
-                        url: '/place-order', // Replace with the actual URL for saving the cart
-                        type: 'POST',
-                        data: {
-                            
-                        },
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            window.location.href = '/complete-order';
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error saving cart:', error);
-                        }
-                    });
-                });
+        $('#headingThree .accordion-button').attr('data-bs-toggle', '');
+        $('#headingThree .accordion-button').addClass('disabled');
+        $('#headingThree .accordion-button').attr('aria-disabled', 'true');
+    }
+
+    $(".confirm").click(function() {
+        $('#collapseTwo').removeClass(
+            'show');
+        $('#collapseTwo').prev('.accordion-header').find('button')
+            .addClass(
+                'collapsed');
+        $('#collapseTwo').attr('aria-expanded',
+            'false');
+
+        $('#collapseThree').addClass(
+            'show');
+        $('#collapseThree').prev('.accordion-header').find('button')
+            .removeClass(
+                'collapsed');
+        $('#collapseThree').attr('aria-expanded', 'true');
+    });
+
+    $(".place").click(function() {
+        $.ajax({
+            url: '/place-order', // Replace with the actual URL for saving the cart
+            type: 'POST',
+            data: {
+
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                window.location.href = '/complete-order';
+            },
+            error: function(xhr, status, error) {
+                console.error('Error saving cart:', error);
+            }
+        });
+    });
 
 
-                $(".save-address").click(function() {
-                    firstname = $("#firstname").val();
-                    lastname = $("#lastname").val();
-                    mobile = $("#mobile").val();
-                    address = $("#address").val();
-                    pincode = $("#pincode").val();
-                    city = $("#city").val();
-                    state = $("#state").val();
-                    country = $("#country").val();
+    $(".save-address").click(function() {
+        firstname = $("#firstname").val();
+        lastname = $("#lastname").val();
+        mobile = $("#mobile").val();
+        address = $("#address").val();
+        pincode = $("#pincode").val();
+        city = $("#city").val();
+        state = $("#state").val();
+        country = $("#country").val();
 
-                    $.ajax({
-                        url: '/add-address',
-                        type: 'POST',
-                        data: {
-                            firstname: firstname,
-                            lastname: lastname,
-                            mobile: mobile,
-                            address: address,
-                            pincode: pincode,
-                            city: city,
-                            state: state,
-                            country: country
-                        },
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            $('#collapseOne').removeClass(
-                                'show');
-                            $('#collapseOne').prev('.accordion-header').find('button')
-                                .addClass(
-                                    'collapsed');
-                            $('#collapseOne').attr('aria-expanded',
-                                'false');
+        $.ajax({
+            url: '/add-address',
+            type: 'POST',
+            data: {
+                firstname: firstname,
+                lastname: lastname,
+                mobile: mobile,
+                address: address,
+                pincode: pincode,
+                city: city,
+                state: state,
+                country: country
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                $('#collapseOne').removeClass(
+                    'show');
+                $('#collapseOne').prev('.accordion-header').find('button')
+                    .addClass(
+                        'collapsed');
+                $('#collapseOne').attr('aria-expanded',
+                    'false');
 
-                            $('#collapseTwo').addClass(
-                                'show');
-                            $('#collapseTwo').prev('.accordion-header').find('button')
-                                .removeClass(
-                                    'collapsed');
-                            $('#collapseTwo').attr('aria-expanded', 'true');
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error saving cart:', error);
-                        }
-                    });
-                });
-            });
-            </script>
-            @endsection
+                $('#headingOne .accordion-button').attr('data-bs-toggle', '');
+                $('#headingOne .accordion-button').addClass('disabled');
+                $('#headingOne .accordion-button').attr('aria-disabled', 'true');
+
+                $('#headingTwo .accordion-button').attr('data-bs-toggle', 'collapse');
+                $('#headingTwo .accordion-button').removeClass('disabled');
+                $('#headingTwo .accordion-button').attr('aria-disabled', '');
+
+                $('#collapseTwo').addClass(
+                    'show');
+                $('#collapseTwo').prev('.accordion-header').find('button')
+                    .removeClass(
+                        'collapsed');
+                $('#collapseTwo').attr('aria-expanded', 'true');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error saving cart:', error);
+            }
+        });
+    });
+});
+</script>
+@endsection

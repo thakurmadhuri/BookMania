@@ -42,7 +42,7 @@
                                                             {{$book->qty}}</small>
                                                     </p>
                                                     <p class="card-text">
-                                                        <small class="text-muted">Quantity =
+                                                        <small class="text-muted">Amount =
                                                             {{$book->total_book_price}}</small>
                                                     </p>
                                                 </div>

@@ -8,6 +8,7 @@ use App\Models\UserDetails;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
@@ -32,13 +33,33 @@ class CartController extends Controller
         if ($c !== null) {
             $de = CartDetails::where('cart_id', $c->id)->where('book_id', $data['book_id'])->first();
 
-            $c->total_qty = $c->total_qty - $de->qty + $data['quantity'];
-            $c->total_price = $c->total_price - $de->total_book_price + $data['total'];
-            $c->save();
+            if (isset($de)) {
 
-            $de->qty = $data['quantity'];
-            $de->total_book_price = $data['total'];
-            $de->save();
+                $c->total_qty = $c->total_qty - $de->qty + $data['quantity'];
+                $c->total_price = $c->total_price - $de->total_book_price + $data['total'];
+                $c->save();
+
+                if($data['quantity']==0){
+                    $de->delete();
+                }
+                else{
+                    $de->qty = $data['quantity'];
+                    $de->total_book_price = $data['total'];
+                    $de->save();
+                }
+                
+            } else {
+                $de = CartDetails::create([
+                    "cart_id" => $c->id,
+                    "book_id" => $data['book_id'],
+                    "qty" => $data['quantity'],
+                    "total_book_price" => $data['total'],
+                ]);
+
+                $c->total_qty = $c->total_qty + $data['quantity'];
+                $c->total_price = $c->total_price + $data['total'];
+                $c->save();
+            }
 
         } else {
             $cart = Cart::create([
@@ -53,12 +74,38 @@ class CartController extends Controller
                 "qty" => $data['quantity'],
                 "total_book_price" => $data['total'],
             ]);
+
+            
         }
+
+        $cart = Session::get('cart', []);
+
+        $productId = $data['book_id'];
+        $quantity = $data['quantity'];
+        if ($quantity <= 0) {
+            unset($cart[$productId]);
+        } else {
+            if (isset($cart[$productId])) {
+                $cart[$productId] += $quantity;
+            } else {
+                $cart[$productId] = $quantity;
+            }
+        }
+
+        Session::put('cart', $cart);
 
         return response()->json(200);
     }
 
-    public function checkout(Request $request){
+    public function cartCount()
+    {
+        $cart = Session::get('cart', []);
+        $cartLength = count($cart);
+        return response()->json(['count' => $cartLength]);
+    }
+    
+    public function checkout(Request $request)
+    {
         $user = auth()->user();
 
         $states = [
@@ -106,29 +153,29 @@ class CartController extends Controller
             }
         ])->where("user_id", $user->id)->get();
 
-        return view("checkout", compact("cart", 'user','states'));
+        return view("checkout", compact("cart", 'user', 'states'));
     }
 
-    public function addAddress(Request $request){
+    public function addAddress(Request $request)
+    {
         $user = auth()->user();
 
-        $address=UserDetails::create([
-            'user_id'=> $user->id,
-            'first_name'=> $request->input('firstname'),
-            'last_name'=> $request->input('lastname'),
-            'mobile'=> $request->input('mobile'),
-            'address'=> $request->input('address'),
-            'pincode'=> $request->input('pincode'),
-            'city'=> $request->input('city'),
-            'state'=> $request->input('state'),
-            'country'=> $request->input('country'),
-            "default_address"=> false,
+        $address = UserDetails::create([
+            'user_id' => $user->id,
+            'first_name' => $request->input('firstname'),
+            'last_name' => $request->input('lastname'),
+            'mobile' => $request->input('mobile'),
+            'address' => $request->input('address'),
+            'pincode' => $request->input('pincode'),
+            'city' => $request->input('city'),
+            'state' => $request->input('state'),
+            'country' => $request->input('country'),
+            "default_address" => false,
         ]);
 
-        if($address){
+        if ($address) {
             return response()->json(200);
-        }
-        else{
+        } else {
             return response()->json(500);
         }
 

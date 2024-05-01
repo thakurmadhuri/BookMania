@@ -14,9 +14,13 @@
                     </div>
                     @endif
 
+                    @php
+                    $cart = Session::get('cart', []);
+                    @endphp
+
                     <div class="row row-cols-1 row-cols-md-3 g-4">
                         @foreach($books as $book)
-                       
+
                         <div class="col">
                             <div class="card h-100">
                                 <img src="{{ asset('images/book1.jpg') }}" class="card-img-top" alt="{{$book->name}}">
@@ -28,14 +32,16 @@
                                 <div class="card-footer d-flex justify-content-between">
                                     <small class="text-muted">₹ {{$book->price}}</small>
                                     <input type="hidden" id="price-{{$book->id }}" value="{{$book->price}}">
-                                    <button class="add btn btn-sm btn-success" data-bookid="{{ $book->id }}"> Add to
+                                    <button class="add btn btn-sm btn-success " style="{{isset($cart[$book->id])? 'display:none;': ''  }}" data-bookid="{{ $book->id }}"> Add to
                                         cart</button>
-                                    <div class="counter" data-bookid="{{ $book->id }}">
+                                    <div class="counter" data-bookid="{{ $book->id }}" style="{{isset($cart[$book->id])? '': 'display:none;'  }}">
                                         <div class="input-group">
                                             <button class="minus btn btn-sm btn-outline-success"
                                                 data-bookid="{{ $book->id }}" type="button">-</button>
-                                            <input type="text" val="" style="width:30px;" data-bookid="{{ $book->id }}"
-                                                class="qty ps-1 pe-1" disabled>
+                                            <input type="text"
+                                                value="{{isset($cart[$book->id])? $cart[$book->id]: ''  }}"
+                                                style="width:30px;" data-bookid="{{ $book->id }}" class="qty ps-1 pe-1"
+                                                disabled>
                                             <button class="plus btn btn-sm btn-outline-success"
                                                 data-bookid="{{ $book->id }}" type="button">+</button>
                                         </div>
@@ -53,7 +59,7 @@
 
 <script>
 $(document).ready(function() {
-    $(".counter").hide();
+    // $(".counter").hide();
 
     $(".add").click(function() {
         var bookId = $(this).data("bookid");
@@ -86,14 +92,14 @@ $(document).ready(function() {
 
     function addToCart(bookId, qty) {
         price = $("#price-" + bookId + "").val();
-        total=price*qty;
+        total = price * qty;
         $.ajax({
             url: '/store-cart', // Replace with the actual URL for saving the cart
             type: 'POST',
             data: {
                 book_id: bookId,
                 quantity: qty,
-                total:total
+                total: total
             },
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

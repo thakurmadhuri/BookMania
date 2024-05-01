@@ -7,10 +7,17 @@ use App\Models\Books;
 use App\Models\Categories;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BookResource;
 use Illuminate\Support\Facades\Auth;
 
 class BooksController extends Controller
 {
+
+    public function getAll(){
+        $books = Books::all();
+        return BookResource::collection($books);
+    }
+    
     public function index(){
         $books = Books::all();
         return view("books",compact("books"));
@@ -46,11 +53,10 @@ class BooksController extends Controller
 
     public function list(){
         $user=Auth::user();
-        // $cart = Cart::with('cartdetails')->where("user_id",$user->id)->get();
-        // dd($cart);
+        $cart = Cart::with('cartdetails')->where("user_id",$user->id)->first();
 
         $books = Books::all();
-        return view("book-list",compact("books"));
+        return view("book-list",compact("books",'cart'));
     }
 
 }
