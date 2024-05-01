@@ -12,6 +12,7 @@ class Books extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        
         'name',
         'description',
         'price',

@@ -1,9 +1,12 @@
 <?php
 
-use App\Http\Controllers\BooksController;
-use App\Http\Controllers\CartController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BooksController;
+use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\CategoriesController;
 
 /*
@@ -54,6 +57,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('store-cart',  [CartController::class, 'store'])->name('store-cart');
         Route::get('checkout',  [CartController::class, 'checkout'])->name('checkout');
         Route::post('add-address',  [CartController::class, 'addAddress'])->name('add-address');
+        Route::post('place-order',  [OrdersController::class, 'placeOrder'])->name('place-order');
+        Route::get('complete-order',  [OrdersController::class, 'completeOrder'])->name('complete-order');
      });
 
  });

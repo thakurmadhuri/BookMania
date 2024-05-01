@@ -240,7 +240,28 @@
                                             <div id="collapseThree" class="accordion-collapse collapse"
                                                 aria-labelledby="headingThree" data-bs-parent="#accordionExample">
                                                 <div class="accordion-body">
-                                                    
+                                                    <div class="d-flex justify-content-evenly mb-3">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio"
+                                                                name="paymentmode" id="cash" value="cash" checked>
+                                                            <label class="form-check-label" for="cash">
+                                                                Cash On Delivery
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio"
+                                                                name="paymentmode" id="online" value="online" disabled>
+                                                            <label class="form-check-label" for="online">
+                                                                Stripe
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-center">
+                                                        <br><button class="btn btn-success mb-2 place"> Place
+                                                            Order</button>
+                                                    </div>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -254,6 +275,43 @@
 
             <script>
             $(document).ready(function() {
+                $(".confirm").click(function() {
+                    $('#collapseTwo').removeClass(
+                        'show');
+                    $('#collapseTwo').prev('.accordion-header').find('button')
+                        .addClass(
+                            'collapsed');
+                    $('#collapseTwo').attr('aria-expanded',
+                        'false');
+
+                    $('#collapseThree').addClass(
+                        'show');
+                    $('#collapseThree').prev('.accordion-header').find('button')
+                        .removeClass(
+                            'collapsed');
+                    $('#collapseThree').attr('aria-expanded', 'true');
+                });
+
+                $(".place").click(function() {
+                    $.ajax({
+                        url: '/place-order', // Replace with the actual URL for saving the cart
+                        type: 'POST',
+                        data: {
+                            
+                        },
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            window.location.href = '/complete-order';
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error saving cart:', error);
+                        }
+                    });
+                });
+
+
                 $(".save-address").click(function() {
                     firstname = $("#firstname").val();
                     lastname = $("#lastname").val();
@@ -263,9 +321,9 @@
                     city = $("#city").val();
                     state = $("#state").val();
                     country = $("#country").val();
-                    console.log(name);
+
                     $.ajax({
-                        url: '/add-address', // Replace with the actual URL for saving the cart
+                        url: '/add-address',
                         type: 'POST',
                         data: {
                             firstname: firstname,
