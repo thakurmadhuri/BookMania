@@ -32,7 +32,7 @@
                                             <small class="text-muted">Quantity = {{$book->qty}}</small>
                                         </p>
                                         <p class="card-text">
-                                            <small class="text-muted">Quantity = {{$book->total_book_price}}</small>
+                                            <small class="text-muted">Amount = {{$book->total_book_price}}</small>
                                         </p>
                                     </div>
                                 </div>
@@ -42,8 +42,10 @@
 
                     @endforeach
                     @endforeach
-                    <div class="d-flex justify-content-end">
-
+                    <div class="d-flex justify-content-evenly">
+                        <span class="fw-bold">
+                            Total Amount = ₹ {{$cart[0]['total_price']}}
+                        </span>
                         <a class="btn btn-success mb-2" href="{{route('checkout')}}">Proceed To Checkout</a>
                     </div>
                     @else

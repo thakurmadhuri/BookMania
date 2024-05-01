@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('address');
             $table->string('pincode');
-            $table->boolean('default_address');
+            $table->boolean('default_address')->nullable();
             $table->string('mobile');
             $table->string('city');
             $table->string('state');

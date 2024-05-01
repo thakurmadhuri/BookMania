@@ -18,10 +18,10 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
+    <nav class="navbar sticky-top navbar-expand-md navbar-dark bg-dark shadow-sm ">
+            <div class="container-fluid">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" width="30" height="30">
+                    <img src="{{ asset('images/logo-new.png') }}" alt="Logo" width="40" height="40">
                 &nbsp;
                     {{ config('app.name', 'Laravel') }}
                 </a>

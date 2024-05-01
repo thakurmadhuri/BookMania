@@ -9,6 +9,7 @@ use App\Models\UserDetails;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Session;
 
 class OrdersController extends Controller
 {
@@ -24,8 +25,11 @@ class OrdersController extends Controller
 
         $address = UserDetails::where("user_id", $user->id)->first();
 
+        $latestOrder = Orders::orderBy('created_at', 'DESC')->first();
+        $id = '#ORD' . str_pad($latestOrder->id + 1, 8, "0", STR_PAD_LEFT);
+
         $order = Orders::create([
-            'order_id' => 'ORD-' . Str::uuid(),
+            'order_id' => $id,
             'total_qty' => $cart->total_qty,
             'total_price' => $cart->total_price,
             'payment_method' => 'CASH',
@@ -45,19 +49,22 @@ class OrdersController extends Controller
                 'order_id' => $order->id,
                 'book_id' => $cartdetail->book_id,
                 'qty' => $cartdetail->qty,
-                'total_book_price'=> $cartdetail->total_book_price,
+                'total_book_price' => $cartdetail->total_book_price,
             ]);
         }
 
         $cart->delete();
-        
+
+        Session::forget('cart');
+
         if ($order) {
             return response()->json(200);
         }
 
     }
 
-    public function completeOrder(Request $request){
+    public function completeOrder(Request $request)
+    {
         $user = auth()->user();
         $order = Orders::with([
             'books' => function ($query) {
@@ -66,5 +73,16 @@ class OrdersController extends Controller
         ])->where("user_id", $user->id)->latest()->first();
 
         return view("complete-order", compact("order"));
+    }
+
+    public function myOrders(){
+        $user = auth()->user();
+        $orders = Orders::with([
+            'books' => function ($query) {
+                $query->join('books', 'order_books.book_id', '=', 'books.id');
+            }
+        ])->where("user_id", $user->id)->get();
+
+        return view("my-orders", compact("orders"));
     }
 }

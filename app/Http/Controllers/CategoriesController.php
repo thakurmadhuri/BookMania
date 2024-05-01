@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Categories;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\CategoriesResource;
 
 class CategoriesController extends Controller
 {
@@ -36,5 +37,10 @@ class CategoriesController extends Controller
     public function delete($id){
         Categories::where("id",$id)->delete();
         return redirect("categories")->with("success","Deleted successfully..!");
+    }
+
+    public function getAll(){
+        $categories = Categories::all();
+        return CategoriesResource::collection($categories);
     }
 }
