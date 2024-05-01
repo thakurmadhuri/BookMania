@@ -14,7 +14,7 @@
                     </div>
                     @endif
 
-                    @if(isset($cart))
+                    @if(isset($cart) && count($cart)>0)
                     @foreach($cart as $item)
                     @foreach($item['cartdetails'] as $book)
                     <div class="card mb-3">
@@ -47,9 +47,7 @@
                         <a class="btn btn-success mb-2" href="{{route('checkout')}}">Proceed To Checkout</a>
                     </div>
                     @else
-                    <div class="card mb-3">
-                        <h4>Empty Cart</h4>
-                    </div>
+                    <img src="{{asset('images/empty-cart.png')}}">
                     @endif
                 </div>
             </div>
