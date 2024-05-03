@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('order_books', function (Blueprint $table) {
             $table->id();
-            $table->string('order_id');
-            $table->string('book_id');
-            $table->string('qty');
-            $table->string('total_book_price');
-            $table->softDeletes('deleted_at');
+            $table->unsignedBigInteger('order_id');
+            $table->unsignedBigInteger('book_id');
+            $table->Integer('qty');
+            $table->decimal('total_book_price');
+            $table->foreign('order_id')
+                ->references('id')->on('orders')
+                ->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\CartDetails;
-use App\Models\UserDetails;
+use App\Models\UserAddresses;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -160,7 +160,7 @@ class CartController extends Controller
     {
         $user = auth()->user();
 
-        $address = UserDetails::create([
+        $address = UserAddresses::create([
             'user_id' => $user->id,
             'first_name' => $request->input('firstname'),
             'last_name' => $request->input('lastname'),

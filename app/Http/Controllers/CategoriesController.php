@@ -19,16 +19,21 @@ class CategoriesController extends Controller
     }
     
     public function store(Request $request){
+        $validated = $request->validate([
+            'name' => 'required|max:255',
+        ]);
         $cat = Categories::create($request->all());
         return redirect("categories")->with("success","Category created successfully..!");
     }
 
     public function edit($id){
+        
         $category = Categories::find($id);
         return view("edit-category",compact("category"));
     }
 
     public function update(Request $request, $id){
+        
         $cat = Categories::find($id);
         $cat->update($request->all());
         return redirect("categories")->with("success","Updated successfully..!");
