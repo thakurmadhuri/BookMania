@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('carts', function (Blueprint $table) {
             $table->id();
-            $table->string('total_qty');
-            $table->string('total_price');
-            $table->string('user_id');
-            $table->softDeletes('deleted_at');
+            $table->integer('total_qty');
+            $table->decimal('total_price');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

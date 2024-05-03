@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Orders;
 use App\Models\OrderBooks;
-use App\Models\UserDetails;
+use App\Models\UserAddresses;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -23,10 +23,15 @@ class OrdersController extends Controller
             }
         ])->where("user_id", $user->id)->first();
 
-        $address = UserDetails::where("user_id", $user->id)->first();
+        $address = UserAddresses::where("user_id", $user->id)->first();
 
         $latestOrder = Orders::orderBy('created_at', 'DESC')->first();
-        $id = '#ORD' . str_pad($latestOrder->id + 1, 8, "0", STR_PAD_LEFT);
+        if($latestOrder){
+            $id = '#ORD' . str_pad($latestOrder->id + 1, 8, "0", STR_PAD_LEFT);
+        }
+        else{
+            $id = '#ORD' . str_pad( 1, 8, "0", STR_PAD_LEFT);
+        }
 
         $order = Orders::create([
             'order_id' => $id,

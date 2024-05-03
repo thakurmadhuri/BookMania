@@ -119,7 +119,7 @@
             .then(response => response.json())
             .then(data => {
                 const cartBadge = document.getElementById('cartBadge');
-                // console.log(cartBadge);
+                console.log(cartBadge);
                 if (cartBadge !== null) {
                     cartBadge.textContent = data.count > 0 ? data.count : '';
                 }

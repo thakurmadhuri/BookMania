@@ -357,14 +357,6 @@ $(document).ready(function() {
                 $('#collapseOne').attr('aria-expanded',
                     'false');
 
-                $('#headingOne .accordion-button').attr('data-bs-toggle', '');
-                $('#headingOne .accordion-button').addClass('disabled');
-                $('#headingOne .accordion-button').attr('aria-disabled', 'true');
-
-                $('#headingTwo .accordion-button').attr('data-bs-toggle', 'collapse');
-                $('#headingTwo .accordion-button').removeClass('disabled');
-                $('#headingTwo .accordion-button').attr('aria-disabled', '');
-
                 $('#collapseTwo').addClass(
                     'show');
                 $('#collapseTwo').prev('.accordion-header').find('button')

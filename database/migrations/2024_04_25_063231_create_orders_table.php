@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,18 +14,21 @@ return new class extends Migration
             $table->id();
             $table->string('order_id');
             $table->string('total_qty');
-            $table->string('total_price');
+            $table->decimal('total_price');
             $table->string('payment_method');
-            $table->string('user_id');
+            $table->unsignedBigInteger('user_id');
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('address');
-            $table->string('pincode');
+            $table->text('address');
+            $table->string('pincode', 6);
             $table->string('mobile');
             $table->string('city');
             $table->string('state');
             $table->string('country');
-            $table->softDeletes('deleted_at');
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

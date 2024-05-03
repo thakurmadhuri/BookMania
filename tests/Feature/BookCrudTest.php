@@ -58,10 +58,6 @@ class BookCrudTest extends TestCase
 
     // public function test_can_delete_book()
     // {
-    //     $book = Books::factory()->create();
-
-    //     $book->delete();
-
-    //     $this->assertDeleted($book);
+  
     // }
 }
