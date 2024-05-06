@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
 {
@@ -31,7 +32,7 @@ class CartController extends Controller
 
         $c = Cart::where('user_id', $user->id)->first();
         if ($c !== null) {
-            $de = CartDetails::where('carts_id', $c->id)->where('books_id', $data['books_id'])->first();
+            $de = CartDetails::where('cart_id', $c->id)->where('books_id', $data['books_id'])->first();
 
             if (isset($de)) {
 
@@ -50,7 +51,7 @@ class CartController extends Controller
                 
             } else {
                 $de = CartDetails::create([
-                    "carts_id" => $c->id,
+                    "cart_id" => $c->id,
                     "books_id" => $data['books_id'],
                     "qty" => $data['quantity'],
                     "total_book_price" => $data['total'],
@@ -69,7 +70,7 @@ class CartController extends Controller
             ]);
 
             $details = CartDetails::create([
-                "carts_id" => $cart->id,
+                "cart_id" => $cart->id,
                 "books_id" => $data['books_id'],
                 "qty" => $data['quantity'],
                 "total_book_price" => $data['total'],
@@ -158,6 +159,21 @@ class CartController extends Controller
 
     public function addAddress(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'mobile' => 'required|string|regex:/^[0-9]{10}$/',
+            'address' => 'required|string',
+            'pincode' => 'required|string|size:6',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+        ]);
+        
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         $user = auth()->user();
 
         $address = UserAddresses::create([

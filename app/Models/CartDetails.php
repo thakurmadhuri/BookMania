@@ -13,7 +13,7 @@ class CartDetails extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        "carts_id",
+        "cart_id",
         "books_id",
         "qty",
         "total_book_price",
