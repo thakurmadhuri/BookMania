@@ -17,7 +17,7 @@ class CartController extends Controller
         $user = Auth::user();
         $cart = Cart::with([
             'cartdetails' => function ($query) {
-                $query->join('books', 'cart_details.book_id', '=', 'books.id');
+                $query->join('books', 'cart_details.books_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->get();
 
@@ -31,7 +31,7 @@ class CartController extends Controller
 
         $c = Cart::where('user_id', $user->id)->first();
         if ($c !== null) {
-            $de = CartDetails::where('cart_id', $c->id)->where('book_id', $data['book_id'])->first();
+            $de = CartDetails::where('carts_id', $c->id)->where('books_id', $data['books_id'])->first();
 
             if (isset($de)) {
 
@@ -50,8 +50,8 @@ class CartController extends Controller
                 
             } else {
                 $de = CartDetails::create([
-                    "cart_id" => $c->id,
-                    "book_id" => $data['book_id'],
+                    "carts_id" => $c->id,
+                    "books_id" => $data['books_id'],
                     "qty" => $data['quantity'],
                     "total_book_price" => $data['total'],
                 ]);
@@ -69,8 +69,8 @@ class CartController extends Controller
             ]);
 
             $details = CartDetails::create([
-                "cart_id" => $cart->id,
-                "book_id" => $data['book_id'],
+                "carts_id" => $cart->id,
+                "books_id" => $data['books_id'],
                 "qty" => $data['quantity'],
                 "total_book_price" => $data['total'],
             ]);
@@ -80,7 +80,7 @@ class CartController extends Controller
 
         $cart = Session::get('cart', []);
 
-        $productId = $data['book_id'];
+        $productId = $data['books_id'];
         $quantity = $data['quantity'];
         if ($quantity <= 0) {
             unset($cart[$productId]);
@@ -149,7 +149,7 @@ class CartController extends Controller
 
         $cart = Cart::with([
             'cartdetails' => function ($query) {
-                $query->join('books', 'cart_details.book_id', '=', 'books.id');
+                $query->join('books', 'cart_details.books_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->get();
 
