@@ -27,6 +27,18 @@ class CartController extends Controller
 
     public function store(Request $request)
     {
+        $validated = Validator::make($request->all(), [
+            'books_id' => 'required',
+            'quantity' => 'required',
+            'total' => 'required',
+            'author' => 'required',
+            'category_id' => 'required'
+        ]);
+
+        if ($validated->fails()) {
+            return redirect()->back()->withErrors($validated)->withInput();
+        }
+
         $user = Auth::user();
         $data = $request->all();
 
