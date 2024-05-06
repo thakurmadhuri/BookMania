@@ -19,7 +19,7 @@ class OrdersController extends Controller
 
         $cart = Cart::with([
             'cartdetails' => function ($query) {
-                $query->join('books', 'cart_details.book_id', '=', 'books.id');
+                $query->join('books', 'cart_details.books_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->first();
 
@@ -52,7 +52,7 @@ class OrdersController extends Controller
         foreach ($cart->cartdetails as $cartdetail) {
             OrderBooks::create([
                 'order_id' => $order->id,
-                'book_id' => $cartdetail->book_id,
+                'books_id' => $cartdetail->books_id,
                 'qty' => $cartdetail->qty,
                 'total_book_price' => $cartdetail->total_book_price,
             ]);
@@ -73,7 +73,7 @@ class OrdersController extends Controller
         $user = auth()->user();
         $order = Orders::with([
             'books' => function ($query) {
-                $query->join('books', 'order_books.book_id', '=', 'books.id');
+                $query->join('books', 'order_books.books_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->latest()->first();
 
@@ -84,7 +84,7 @@ class OrdersController extends Controller
         $user = auth()->user();
         $orders = Orders::with([
             'books' => function ($query) {
-                $query->join('books', 'order_books.book_id', '=', 'books.id');
+                $query->join('books', 'order_books.books_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->get();
 

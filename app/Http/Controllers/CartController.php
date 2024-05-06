@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
 {
@@ -17,7 +18,7 @@ class CartController extends Controller
         $user = Auth::user();
         $cart = Cart::with([
             'cartdetails' => function ($query) {
-                $query->join('books', 'cart_details.book_id', '=', 'books.id');
+                $query->join('books', 'cart_details.books_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->get();
 
@@ -31,7 +32,7 @@ class CartController extends Controller
 
         $c = Cart::where('user_id', $user->id)->first();
         if ($c !== null) {
-            $de = CartDetails::where('cart_id', $c->id)->where('book_id', $data['book_id'])->first();
+            $de = CartDetails::where('cart_id', $c->id)->where('books_id', $data['books_id'])->first();
 
             if (isset($de)) {
 
@@ -51,7 +52,7 @@ class CartController extends Controller
             } else {
                 $de = CartDetails::create([
                     "cart_id" => $c->id,
-                    "book_id" => $data['book_id'],
+                    "books_id" => $data['books_id'],
                     "qty" => $data['quantity'],
                     "total_book_price" => $data['total'],
                 ]);
@@ -70,7 +71,7 @@ class CartController extends Controller
 
             $details = CartDetails::create([
                 "cart_id" => $cart->id,
-                "book_id" => $data['book_id'],
+                "books_id" => $data['books_id'],
                 "qty" => $data['quantity'],
                 "total_book_price" => $data['total'],
             ]);
@@ -80,7 +81,7 @@ class CartController extends Controller
 
         $cart = Session::get('cart', []);
 
-        $productId = $data['book_id'];
+        $productId = $data['books_id'];
         $quantity = $data['quantity'];
         if ($quantity <= 0) {
             unset($cart[$productId]);
@@ -149,7 +150,7 @@ class CartController extends Controller
 
         $cart = Cart::with([
             'cartdetails' => function ($query) {
-                $query->join('books', 'cart_details.book_id', '=', 'books.id');
+                $query->join('books', 'cart_details.books_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->get();
 
@@ -158,6 +159,21 @@ class CartController extends Controller
 
     public function addAddress(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'mobile' => 'required|string|regex:/^[0-9]{10}$/',
+            'address' => 'required|string',
+            'pincode' => 'required|string|size:6',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+        ]);
+        
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         $user = auth()->user();
 
         $address = UserAddresses::create([

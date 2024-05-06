@@ -55,12 +55,10 @@
                             <a class="nav-link position-relative {{ request()->is('cart*') ? 'active' : '' }}"
                                 href="{{ route('cart') }}">
                                 {{ __('Cart') }}
-                                @if($cartLength>0)
                                 <span id="cartBadge"
-                                    class="position-absolute top-2 start-100 translate-middle badge rounded-pill bg-danger">
+                                    class="position-absolute top-2 start-100 translate-middle badge rounded-pill bg-danger {{$cartLength == 0 ? "d-none" : ''}}">
                                     {{$cartLength}}
                                 </span>
-                                @endif
                             </a>
                         </li>
                         <li class="nav-item">
@@ -119,7 +117,6 @@
             .then(response => response.json())
             .then(data => {
                 const cartBadge = document.getElementById('cartBadge');
-                console.log(cartBadge);
                 if (cartBadge !== null) {
                     cartBadge.textContent = data.count > 0 ? data.count : '';
                 }
