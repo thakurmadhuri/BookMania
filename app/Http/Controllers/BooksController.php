@@ -19,6 +19,12 @@ class BooksController extends Controller
         return BookResource::collection($books);
     }
 
+    public function getOne($id)//get one book
+    {
+        $book = Books::find($id);
+        return $book;
+    }
+
     public function index()//book list for admin
     {
         $books = $this->getAll();
@@ -73,15 +79,15 @@ class BooksController extends Controller
 
     public function edit($id)
     {
-        $book = Books::find($id);
+        $book = $this->getOne($id);
         $categories = $categories = $this->AllCategories();
         return view("add-book", compact("book", 'categories'));
     }
 
     public function update(Request $request, $id)
     {
-       $book = Books::find($id);
- 
+        $book = $this->getOne($id);
+
         if (!$book) {
             return response()->json(['message' => 'Book not found'], 404);
         }
@@ -99,16 +105,14 @@ class BooksController extends Controller
 
     public function delete($id)
     {
-        $book = Books::find($id);
- 
+        $book = $this->getOne($id);
+
         if (!$book) {
             return response()->json(['message' => 'Book not found'], 404);
         }
         $book->delete();
-        
+
         return redirect("books")->with("success", "Deleted successfully..!");
     }
-
-   
 
 }

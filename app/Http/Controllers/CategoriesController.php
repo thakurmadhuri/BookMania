@@ -5,12 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Categories;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\CategoriesResource;
 
 class CategoriesController extends Controller
 {
-    public function index(){
+    public function getAll(){ 
         $categories = Categories::all();
+        return CategoriesResource::collection($categories);
+    }
+
+    public function getOne($id){ 
+        $category = Categories::find($id);
+        return $category;
+    }
+
+    public function index(){
+        $categories = $this->getAll();
         return view("categories",compact("categories"));
     }
 
@@ -18,34 +29,52 @@ class CategoriesController extends Controller
         return view("add-category");
     }
     
-    public function store(Request $request){
-        $validated = $request->validate([
+    public function store(Request $request)
+    {
+        $validated =  Validator::make($request->all(),[
             'name' => 'required|max:255',
         ]);
-        $cat = Categories::create($request->all());
+
+        if ($validated->fails()) {
+            return redirect()->back()->withErrors($validated)->withInput();
+        }
+
+        $cat = Categories::create([
+            'name'=> $request->name,
+        ]);
         return redirect("categories")->with("success","Category created successfully..!");
     }
 
     public function edit($id){
         
-        $category = Categories::find($id);
+        $category =$this->getOne($id);
+        if (!$category) {
+            return response()->json(['message' => 'Book not found'], 404);
+        }
+
         return view("edit-category",compact("category"));
     }
 
     public function update(Request $request, $id){
         
-        $cat = Categories::find($id);
-        $cat->update($request->all());
+        $cat = $this->getOne($id);
+        if (!$cat) {
+            return response()->json(['message' => 'Book not found'], 404);
+        }
+
+        $cat->name=$request->name;
+        $cat->save();
         return redirect("categories")->with("success","Updated successfully..!");
     }
 
     public function delete($id){
-        Categories::where("id",$id)->delete();
+        $cat = $this->getOne($id);
+        if (!$cat) {
+            return response()->json(['message' => 'Book not found'], 404);
+        }
+        $cat->delete();
         return redirect("categories")->with("success","Deleted successfully..!");
     }
 
-    public function getAll(){
-        $categories = Categories::all();
-        return CategoriesResource::collection($categories);
-    }
+  
 }
