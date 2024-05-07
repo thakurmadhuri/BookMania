@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Categories;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Books;
@@ -38,6 +39,10 @@ class BookCrudTest extends TestCase
 
     public function test_can_create_book()
     {
+        $cat = Categories::create([
+            "name" => "sample",
+        ]);
+        
         $response = $this->post('/store-book', [
             'name' => 'sample book',
             'description' => 'description',
