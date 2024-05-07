@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Books;
 use App\Models\Orders;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -19,8 +20,13 @@ class OrderBooks extends Model
         'total_book_price',
     ];
 
-    public function Order():BelongsTo
+    public function order():BelongsTo
     {
         return $this->belongsTo(Orders::class);
+    }
+
+    public function book():BelongsTo
+    {
+        return $this->belongsTo(Books::class,'books_id','id');
     }
 }

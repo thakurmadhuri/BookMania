@@ -50,6 +50,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('delete-category/{id}', [CategoriesController::class, 'delete'])->name('delete-category');
 
         Route::get('orders',  [OrdersController::class, 'allOrders'])->name('orders');
+        Route::get('view-order/{id}',  [OrdersController::class, 'viewOrder'])->name('view-order');
      });
 
      Route::group(['middleware' => ['role:user']], function () {
