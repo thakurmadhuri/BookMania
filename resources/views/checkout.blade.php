@@ -170,7 +170,7 @@
                                         </div>
 
                                         <div class=" d-flex justify-content-center">
-                                            <button class=" btn btn-success save-address ">Save Address</button>
+                                            <button type="button" class=" btn btn-success save-address ">Save Address</button>
                                         </div>
 
                                     </form>
@@ -187,8 +187,17 @@
                             <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
                                 data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
+                                    @php
+                                    $totalAmount = 0;
+                                    @endphp
+
                                     @foreach($cart as $item)
                                     @foreach($item['cartdetails'] as $book)
+                                    @php
+                                    $subtotal = $book->price * $book->qty;
+                                    $totalAmount += $subtotal;
+                                    @endphp
+
                                     <div class="card mb-3">
                                         <div class="row g-0">
                                             <div class="col-md-4">
@@ -207,19 +216,20 @@
                                                         </p>
                                                         <p class="card-text">
                                                             <small class="text-muted">Quantity =
-                                                                {{$book->total_book_price}}</small>
+                                                                {{number_format($subtotal, 2)}}</small>
                                                         </p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+
                                     @endforeach
                                     @endforeach
 
                                     <div class="d-flex justify-content-center">
                                         <p> <span class="fw-bold">Total Amount = </span>
-                                            {{$cart[0]['total_price']}}</p>
+                                            {{number_format($totalAmount, 2)}}</p>
                                     </div>
                                     <div class="d-flex justify-content-center">
                                         <br><button class="btn btn-success mb-2 confirm"> Confirm

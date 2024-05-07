@@ -47,7 +47,8 @@
                                 <td>{{ $book->category['name']}}</td>
                                 <td>
                                 <a class="btn btn-success" href="{{ route('edit-book', ['id' => $book->id ]) }}"> Edit </a>
-                                    <a class="btn btn-danger" href="{{ route('delete-book', ['id' => $book->id ]) }}"> Delete </a>
+                                    <a class="btn btn-danger delete-book" href="{{ route('delete-book', ['id' => '__ID__']) }}"
+                                        data-id="{{ $book->id }}"> Delete </a>
                                 </td>
                             </tr>
                             @php
@@ -61,4 +62,31 @@
         </div>
     </div>
 </div>
+<script>
+    document.querySelectorAll('.delete-book').forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();
+        swal({
+                buttons: ["Cancel", 'Yes'],
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this data!",
+                icon: "warning",
+                // buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    let id = this.getAttribute('data-id');
+                    let deleteUrl = this.getAttribute('href').replace('__ID__', id);
+                    window.location.href = deleteUrl;
+                    swal("Your data has been deleted!", {
+                        icon: "success",
+                    });
+                } else {
+                    swal("Your data is safe!");
+                }
+            });
+    });
+});
+</script>
 @endsection

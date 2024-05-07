@@ -60,11 +60,26 @@
 document.querySelectorAll('.delete-category').forEach(button => {
     button.addEventListener('click', function(event) {
         event.preventDefault();
-        if (confirm("Are you sure you want to delete this category?")) {
-            let categoryId = this.getAttribute('data-id');
-            let deleteUrl = this.getAttribute('href').replace('__ID__', categoryId);
-            window.location.href = deleteUrl;
-        }
+        swal({
+                buttons: ["Cancel", 'Yes'],
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this data!",
+                icon: "warning",
+                // buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    let categoryId = this.getAttribute('data-id');
+                    let deleteUrl = this.getAttribute('href').replace('__ID__', categoryId);
+                    window.location.href = deleteUrl;
+                    swal("Your data has been deleted!", {
+                        icon: "success",
+                    });
+                } else {
+                    swal("Your data is safe!");
+                }
+            });
     });
 });
 </script>

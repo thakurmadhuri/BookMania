@@ -21,6 +21,12 @@
                     @if(isset($cart) && count($cart)>0)
                     @foreach($cart as $item)
                     @foreach($item['cartdetails'] as $book)
+
+                    @php
+                    $subtotal = $book->price * $book->qty;
+                    $totalAmount += $subtotal;
+                    @endphp
+
                     <div class="card mb-3">
                         <div class="row g-0">
                             <div class="col-md-4">
@@ -36,18 +42,13 @@
                                             <small class="text-muted">Quantity = {{$book->qty}}</small>
                                         </p>
                                         <p class="card-text">
-                                            <small class="text-muted">Amount = ₹ {{$book->price}}</small>
+                                            <small class="text-muted">Amount = ₹ {{number_format($subtotal, 2)}}</small>
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    @php
-                    $subtotal = $book->price * $book->qty;
-                    $totalAmount += $subtotal;
-                    @endphp
                     
                     @endforeach
                     @endforeach

@@ -48,6 +48,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('edit-category/{id}', [CategoriesController::class, 'edit'])->name('edit-category');
         Route::post('update-category/{id}', [CategoriesController::class, 'update'])->name('update-category');
         Route::get('delete-category/{id}', [CategoriesController::class, 'delete'])->name('delete-category');
+
+        Route::get('orders',  [OrdersController::class, 'allOrders'])->name('orders');
      });
 
      Route::group(['middleware' => ['role:user']], function () {
