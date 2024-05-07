@@ -14,10 +14,11 @@ use Illuminate\Support\Facades\Session;
 class OrdersController extends Controller
 {
 
-    public function allOrders(){
-        $orders = Orders::orderBy("created_at","desc")->paginate(10);
-        
-        return view("all-orders",compact("orders"));
+    public function allOrders()
+    {
+        $orders = Orders::orderBy("created_at", "desc")->paginate(20);
+
+        return view("all-orders", compact("orders"));
     }
 
     public function placeOrder(Request $request)
@@ -104,5 +105,13 @@ class OrdersController extends Controller
         ])->where("user_id", $user->id)->orderBy('created_at', 'desc')->get();
 
         return view("my-orders", compact("orders"));
+    }
+
+    public function viewOrder($id)
+    {
+        $order = Orders::with(
+            'books'
+        )->where("id", $id)->first();
+        return view("view-order", compact("order"));
     }
 }

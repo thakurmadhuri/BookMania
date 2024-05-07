@@ -50,7 +50,7 @@
                                 <td>{{\Carbon\Carbon::parse($order->created_at)->format('d-m-Y')}}</td>
                                 <td>{{$order->payment_method}}</td>
                                 <td>
-                                    <a class="btn btn-success">
+                                    <a class="btn btn-success" href="{{route('view-order',['id'=>$order->id])}}">
                                         View </a>
                                     <!-- <a class="btn btn-danger delete-order" data-id="{{ $order->id }}"> Delete </a> -->
                                 </td>
@@ -61,6 +61,9 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <div class="d-felx justify-content-center">
+                        {{ $orders->links() }}
+                    </div>
                 </div>
             </div>
         </div>
