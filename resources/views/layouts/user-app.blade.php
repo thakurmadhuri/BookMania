@@ -118,6 +118,9 @@
             .then(data => {
                 const cartBadge = document.getElementById('cartBadge');
                 if (cartBadge !== null) {
+                    if (cartBadge.classList.contains('d-none')) {
+                        cartBadge.classList.remove('d-none');
+                    }
                     cartBadge.textContent = data.count > 0 ? data.count : '';
                 }
             })

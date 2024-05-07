@@ -31,8 +31,6 @@ class CartController extends Controller
             'books_id' => 'required',
             'quantity' => 'required',
             'total' => 'required',
-            'author' => 'required',
-            'category_id' => 'required'
         ]);
 
         if ($validated->fails()) {
@@ -87,8 +85,6 @@ class CartController extends Controller
                 "qty" => $data['quantity'],
                 "total_book_price" => $data['total'],
             ]);
-
-            
         }
 
         $cart = Session::get('cart', []);

@@ -14,6 +14,10 @@
                     </div>
                     @endif
 
+                    @php
+                    $totalAmount = 0;
+                    @endphp
+
                     @if(isset($cart) && count($cart)>0)
                     @foreach($cart as $item)
                     @foreach($item['cartdetails'] as $book)
@@ -32,7 +36,7 @@
                                             <small class="text-muted">Quantity = {{$book->qty}}</small>
                                         </p>
                                         <p class="card-text">
-                                            <small class="text-muted">Amount = {{$book->total_book_price}}</small>
+                                            <small class="text-muted">Amount = ₹ {{$book->price}}</small>
                                         </p>
                                     </div>
                                 </div>
@@ -40,11 +44,16 @@
                         </div>
                     </div>
 
+                    @php
+                    $subtotal = $book->price * $book->qty;
+                    $totalAmount += $subtotal;
+                    @endphp
+                    
                     @endforeach
                     @endforeach
                     <div class="d-flex justify-content-evenly">
                         <span class="fw-bold">
-                            Total Amount = ₹ {{$cart[0]['total_price']}}
+                            Total Amount = ₹ {{ number_format($totalAmount, 2) }}
                         </span>
                         <a class="btn btn-success mb-2" href="{{route('checkout')}}">Proceed To Checkout</a>
                     </div>

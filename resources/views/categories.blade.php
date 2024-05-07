@@ -38,8 +38,11 @@
                                 <td>{{$i}}</td>
                                 <td>{{ $cat->name}}</td>
                                 <td>
-                                    <a class="btn btn-success" href="{{ route('edit-category', ['id' => $cat->id ]) }}"> Edit </a>
-                                    <a class="btn btn-danger" href="{{ route('delete-category', ['id' => $cat->id ]) }}"> Delete </a>
+                                    <a class="btn btn-success" href="{{ route('edit-category', ['id' => $cat->id ]) }}">
+                                        Edit </a>
+                                    <a class="btn btn-danger delete-category"
+                                        href="{{ route('delete-category', ['id' => '__ID__']) }}"
+                                        data-id="{{ $cat->id }}"> Delete </a>
                                 </td>
                             </tr>
                             @php
@@ -53,4 +56,17 @@
         </div>
     </div>
 </div>
+<script>
+document.querySelectorAll('.delete-category').forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();
+        if (confirm("Are you sure you want to delete this category?")) {
+            let categoryId = this.getAttribute('data-id');
+            let deleteUrl = this.getAttribute('href').replace('__ID__', categoryId);
+            window.location.href = deleteUrl;
+        }
+    });
+});
+</script>
+
 @endsection
