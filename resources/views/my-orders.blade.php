@@ -20,6 +20,8 @@
                         <div class="card-body">
                             <h5 class="card-title">{{$order->order_id}}</h5>
                             <h6 class="card-subtitle mb-2 text-muted ">
+                                <span class="fw-bold me-3">Order Date =
+                                    {{ \Carbon\Carbon::parse($order->created_at)->format('d-m-Y') }}</span>
                                 <span class="fw-bold me-3">Items = {{$order->total_qty}}</span>
                                 <span class="fw-bold ">Total Amount = {{$order->total_price}}</span>
                             </h6>

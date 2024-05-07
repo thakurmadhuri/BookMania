@@ -46,19 +46,18 @@ class CartController extends Controller
 
             if (isset($de)) {
 
-                $c->total_qty = $c->total_qty - $de->qty + $data['quantity'];
                 $c->total_price = $c->total_price - $de->total_book_price + $data['total'];
-                $c->save();
 
-                if($data['quantity']==0){
+                if ($data['quantity'] == 0) {
                     $de->delete();
-                }
-                else{
+                } else {
                     $de->qty = $data['quantity'];
                     $de->total_book_price = $data['total'];
                     $de->save();
                 }
+
                 
+
             } else {
                 $de = CartDetails::create([
                     "cart_id" => $c->id,
@@ -67,15 +66,17 @@ class CartController extends Controller
                     "total_book_price" => $data['total'],
                 ]);
 
-                $c->total_qty = $c->total_qty + $data['quantity'];
                 $c->total_price = $c->total_price + $data['total'];
-                $c->save();
             }
+
+            $count = CartDetails::where('cart_id', $c->id)->count();
+            $c->total_qty = $count;
+            $c->save();
 
         } else {
             $cart = Cart::create([
                 'user_id' => $user->id,
-                'total_qty' => $data['quantity'],
+                'total_qty' => '1',
                 'total_price' => $data['total'],
             ]);
 
@@ -85,6 +86,10 @@ class CartController extends Controller
                 "qty" => $data['quantity'],
                 "total_book_price" => $data['total'],
             ]);
+
+            $count = CartDetails::where('cart_id', $cart->id)->count();
+            $cart->total_qty = $count;
+            $cart->save();
         }
 
         $cart = Session::get('cart', []);
@@ -112,7 +117,7 @@ class CartController extends Controller
         $cartLength = count($cart);
         return response()->json(['count' => $cartLength]);
     }
-    
+
     public function checkout(Request $request)
     {
         $user = auth()->user();
@@ -177,7 +182,7 @@ class CartController extends Controller
             'state' => 'required|string|max:255',
             'country' => 'required|string|max:255',
         ]);
-        
+
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }

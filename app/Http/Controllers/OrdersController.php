@@ -13,6 +13,13 @@ use Illuminate\Support\Facades\Session;
 
 class OrdersController extends Controller
 {
+
+    public function allOrders(){
+        $orders = Orders::orderBy("created_at","desc")->paginate(10);
+        
+        return view("all-orders",compact("orders"));
+    }
+
     public function placeOrder(Request $request)
     {
         $user = auth()->user();
@@ -20,17 +27,17 @@ class OrdersController extends Controller
         $cart = Cart::with([
             'cartdetails' => function ($query) {
                 $query->join('books', 'cart_details.books_id', '=', 'books.id');
-            }
+                // ->$query->selectRaw('SUM(books.price * cart_details.qty) as total_price');
+            },
         ])->where("user_id", $user->id)->first();
 
         $address = UserAddresses::where("user_id", $user->id)->first();
 
         $latestOrder = Orders::orderBy('created_at', 'DESC')->first();
-        if($latestOrder){
+        if ($latestOrder) {
             $id = '#ORD' . str_pad($latestOrder->id + 1, 8, "0", STR_PAD_LEFT);
-        }
-        else{
-            $id = '#ORD' . str_pad( 1, 8, "0", STR_PAD_LEFT);
+        } else {
+            $id = '#ORD' . str_pad(1, 8, "0", STR_PAD_LEFT);
         }
 
         $order = Orders::create([
@@ -49,14 +56,21 @@ class OrdersController extends Controller
             'country' => $address->country,
         ]);
 
+        $total = 0;
         foreach ($cart->cartdetails as $cartdetail) {
+            $sub_total = number_format($cartdetail->qty * $cartdetail->price);
+            $total += $sub_total;
+
             OrderBooks::create([
                 'order_id' => $order->id,
                 'books_id' => $cartdetail->books_id,
                 'qty' => $cartdetail->qty,
-                'total_book_price' => $cartdetail->total_book_price,
+                'total_book_price' => $sub_total,
             ]);
         }
+
+        $order->total_price = $total;
+        $order->save();
 
         $cart->delete();
 
@@ -80,13 +94,14 @@ class OrdersController extends Controller
         return view("complete-order", compact("order"));
     }
 
-    public function myOrders(){
+    public function myOrders()
+    {
         $user = auth()->user();
         $orders = Orders::with([
             'books' => function ($query) {
                 $query->join('books', 'order_books.books_id', '=', 'books.id');
             }
-        ])->where("user_id", $user->id)->get();
+        ])->where("user_id", $user->id)->orderBy('created_at', 'desc')->get();
 
         return view("my-orders", compact("orders"));
     }
