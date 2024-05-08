@@ -170,7 +170,8 @@
                                         </div>
 
                                         <div class=" d-flex justify-content-center">
-                                            <button type="button" class=" btn btn-success save-address ">Save Address</button>
+                                            <button type="button" class=" btn btn-success save-address ">Save
+                                                Address</button>
                                         </div>
 
                                     </form>
@@ -215,8 +216,8 @@
                                                                 {{$book->qty}}</small>
                                                         </p>
                                                         <p class="card-text">
-                                                            <small class="text-muted">Quantity =
-                                                                {{number_format($subtotal, 2)}}</small>
+                                                            <small class="text-muted">Total Amount =
+                                                                ₹ {{number_format($subtotal, 2, '.', '')}}</small>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -229,7 +230,7 @@
 
                                     <div class="d-flex justify-content-center">
                                         <p> <span class="fw-bold">Total Amount = </span>
-                                            {{number_format($totalAmount, 2)}}</p>
+                                            ₹ {{number_format($totalAmount, 2, '.', '')}}</p>
                                     </div>
                                     <div class="d-flex justify-content-center">
                                         <br><button class="btn btn-success mb-2 confirm"> Confirm

@@ -41,7 +41,7 @@
                         @guest
                         @else
                         <li class="nav-item ">
-                            <a class="nav-link {{ request()->is('profile*') ? 'active' : '' }}"" href="
+                            <a class="nav-link {{ request()->is('profile*') ? 'active' : '' }}" href="
                                 {{ route('profile') }}">{{ __('Profile') }}</a>
                         </li>
                         <li class="nav-item">

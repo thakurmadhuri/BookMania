@@ -18,8 +18,9 @@ return new class extends Migration {
             $table->string('author');
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')
-                ->references('id')->on('categories')
-                ->onDelete('cascade');
+                ->references('id')
+                ->on('categories')
+                ->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -59,8 +59,10 @@ class OrdersController extends Controller
 
         $total = 0;
         foreach ($cart->cartdetails as $cartdetail) {
-            $sub_total = number_format($cartdetail->qty * $cartdetail->price);
-            $total += $sub_total;
+            $sub_total = $cartdetail->qty * $cartdetail->price;
+            // $sub_total = floatval(str_replace(',', '', $sub_total));
+            $total = $total + $sub_total;
+            // dd($sub_total);
 
             OrderBooks::create([
                 'order_id' => $order->id,

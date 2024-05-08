@@ -80,7 +80,7 @@ class BooksController extends Controller
     public function edit($id)
     {
         $book = $this->getOne($id);
-        $categories = $categories = $this->AllCategories();
+        $categories = $this->AllCategories();
         return view("add-book", compact("book", 'categories'));
     }
 
@@ -100,13 +100,12 @@ class BooksController extends Controller
 
         $book->save();
 
-        return redirect('books')->with('success', 'Book updated sucessfully..!');
+        return redirect('books')->with('success', 'Book updated successfully..!');
     }
 
     public function delete($id)
     {
         $book = $this->getOne($id);
-
         if (!$book) {
             return response()->json(['message' => 'Book not found'], 404);
         }

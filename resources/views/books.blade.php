@@ -25,6 +25,7 @@
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
+                                <th scope="col">Image</th>
                                 <th scope="col" style="width: 22%;">Name</th>
                                 <th scope="col" style="width: 22%;">Description</th>
                                 <th scope="col">Author</th>
@@ -36,19 +37,27 @@
                         <tbody>
                             @php
                             $i=1;
+
                             @endphp
                             @foreach($books as $book)
                             <tr>
                                 <td>{{$i}}</td>
-                                <td style="width: 22%;">{{ $book->name}}</td>
+                                <td>
+                                    <img src="{{ asset('images/book1.jpg') }}" class="card-img-top"
+                                        alt="{{ $book->name}}" style=" height: 50px; width: 70px;">
+                                </td>
+                                <td style="width: 22%;">{{ $book->name}}
+                                </td>
                                 <td style="width: 22%;">{{ $book->description}}</td>
                                 <td>{{ $book->author}}</td>
                                 <td>{{ $book->price}}</td>
-                                <td>{{ $book->category['name']}}</td>
+                                <td>{{  $book->category ? $book->category['name']:''}}</td>
                                 <td>
-                                <a class="btn btn-success" href="{{ route('edit-book', ['id' => $book->id ]) }}"> Edit </a>
-                                    <a class="btn btn-danger delete-book" href="{{ route('delete-book', ['id' => '__ID__']) }}"
-                                        data-id="{{ $book->id }}"> Delete </a>
+                                    <a class="btn btn-success" href="{{ route('edit-book', ['id' => $book->id ]) }}">
+                                        Edit </a>
+                                    <a class="btn btn-danger delete-book"
+                                        href="{{ route('delete-book', ['id' => '__ID__']) }}" data-id="{{ $book->id }}">
+                                        Delete </a>
                                 </td>
                             </tr>
                             @php
@@ -63,7 +72,7 @@
     </div>
 </div>
 <script>
-    document.querySelectorAll('.delete-book').forEach(button => {
+document.querySelectorAll('.delete-book').forEach(button => {
     button.addEventListener('click', function(event) {
         event.preventDefault();
         swal({
