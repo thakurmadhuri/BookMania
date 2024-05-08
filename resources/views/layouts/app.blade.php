@@ -36,16 +36,16 @@
                     @guest
                     @else
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('users') }}">{{ __('Users') }}</a>
+                            <a class="nav-link {{ request()->is('users*') ? 'active' : '' }}" href="{{ route('users') }}">{{ __('Users') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('categories') }}">{{ __('Books Categories') }}</a>
+                            <a class="nav-link {{ request()->is('categories*') ? 'active' : '' }}" href="{{ route('categories') }}">{{ __('Books Categories') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('books') }}">{{ __('Books') }}</a>
+                            <a class="nav-link {{ request()->is('books*') ? 'active' : '' }}" href="{{ route('books') }}">{{ __('Books') }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('orders') }}">{{ __('Orders') }}</a>
+                            <a class="nav-link {{ (request()->is('orders*') ||  request()->is('view-order*') )? 'active' : '' }}" href="{{ route('orders') }}">{{ __('Orders') }}</a>
                         </li>
                         @endguest
                     </ul>

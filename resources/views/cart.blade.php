@@ -42,7 +42,7 @@
                                             <small class="text-muted">Quantity = {{$book->qty}}</small>
                                         </p>
                                         <p class="card-text">
-                                            <small class="text-muted">Amount = ₹ {{number_format($subtotal, 2)}}</small>
+                                            <small class="text-muted">Amount = ₹ {{number_format($subtotal, 2, '.', '')}}</small>
                                         </p>
                                     </div>
                                 </div>
@@ -54,7 +54,7 @@
                     @endforeach
                     <div class="d-flex justify-content-evenly">
                         <span class="fw-bold">
-                            Total Amount = ₹ {{ number_format($totalAmount, 2) }}
+                            Total Amount = ₹ {{ number_format($totalAmount, 2, '.', '') }}
                         </span>
                         <a class="btn btn-success mb-2" href="{{route('checkout')}}">Proceed To Checkout</a>
                     </div>
