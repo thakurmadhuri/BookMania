@@ -32,7 +32,7 @@ class Orders extends Model
 
     public function books():HasMany
     {
-        return $this->hasMany(OrderBooks::class,'order_id','id');
+        return $this->hasMany(OrderBooks::class);
     }
 
 
