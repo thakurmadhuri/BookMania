@@ -27,6 +27,6 @@ class OrderBooks extends Model
 
     public function book():BelongsTo
     {
-        return $this->belongsTo(Books::class,'books_id','id');
+        return $this->belongsTo(Books::class);
     }
 }

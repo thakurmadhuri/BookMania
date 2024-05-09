@@ -51,7 +51,7 @@
                                 <td style="width: 22%;">{{ $book->description}}</td>
                                 <td>{{ $book->author}}</td>
                                 <td>{{ $book->price}}</td>
-                                <td>{{  $book->category ? $book->category['name']:''}}</td>
+                                <td>{{  $book->category['name']}}</td>
                                 <td>
                                     <a class="btn btn-success" href="{{ route('edit-book', ['id' => $book->id ]) }}">
                                         Edit </a>

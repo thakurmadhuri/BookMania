@@ -28,7 +28,6 @@ class OrdersController extends Controller
         $cart = Cart::with([
             'cartdetails' => function ($query) {
                 $query->join('books', 'cart_details.books_id', '=', 'books.id');
-                // ->$query->selectRaw('SUM(books.price * cart_details.qty) as total_price');
             },
         ])->where("user_id", $user->id)->first();
 
@@ -60,9 +59,7 @@ class OrdersController extends Controller
         $total = 0;
         foreach ($cart->cartdetails as $cartdetail) {
             $sub_total = $cartdetail->qty * $cartdetail->price;
-            // $sub_total = floatval(str_replace(',', '', $sub_total));
             $total = $total + $sub_total;
-            // dd($sub_total);
 
             OrderBooks::create([
                 'order_id' => $order->id,
@@ -116,4 +113,5 @@ class OrdersController extends Controller
         )->where("id", $id)->first();
         return view("view-order", compact("order"));
     }
+
 }
