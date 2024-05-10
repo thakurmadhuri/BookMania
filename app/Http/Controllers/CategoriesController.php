@@ -72,6 +72,7 @@ class CategoriesController extends Controller
         if (!$cat) {
             return response()->json(['message' => 'Book not found'], 404);
         }
+        $cat->books()->delete();
         $cat->delete();
         return redirect("categories")->with("success","Deleted successfully..!");
     }
