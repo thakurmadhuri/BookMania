@@ -32,9 +32,11 @@
                                 <div class="card-footer d-flex justify-content-between">
                                     <small class="text-muted">₹ {{$book->price}}</small>
                                     <input type="hidden" id="price-{{$book->id }}" value="{{$book->price}}">
-                                    <button class="add btn btn-sm btn-success " style="{{isset($cart[$book->id])? 'display:none;': ''  }}" data-bookid="{{ $book->id }}"> Add to
-                                        cart</button>
-                                    <div class="counter" data-bookid="{{ $book->id }}" style="{{isset($cart[$book->id])? '': 'display:none;'  }}">
+                                    <button class="add btn btn-sm btn-success "
+                                        style="{{isset($cart[$book->id])? 'display:none;': ''  }}"
+                                        data-bookid="{{ $book->id }}"> Add to cart</button>
+                                    <div class="counter" data-bookid="{{ $book->id }}"
+                                        style="{{isset($cart[$book->id])? '': 'display:none;'  }}">
                                         <div class="input-group">
                                             <button class="minus btn btn-sm btn-outline-success"
                                                 data-bookid="{{ $book->id }}" type="button">-</button>

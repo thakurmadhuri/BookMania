@@ -40,24 +40,25 @@ class CartController extends Controller
         $user = Auth::user();
         $data = $request->all();
 
+        $productId = $data['books_id'];
+        $quantity = $data['quantity'];
+
         $c = Cart::where('user_id', $user->id)->first();
         if ($c !== null) {
             $de = CartDetails::where('cart_id', $c->id)->where('books_id', $data['books_id'])->first();
 
             if (isset($de)) {
 
-                $c->total_price = $c->total_price - $de->total_book_price + $data['total'];
+                $c->total_price = $c->total_price - $de->total_book_price + floatval($data['total']);
 
                 if ($data['quantity'] == 0) {
                     $de->delete();
                 } else {
                     $de->qty = $data['quantity'];
-                    $de->total_book_price = $data['total'];
+                    $de->total_book_price = floatval($data['total']);
                     $de->save();
                 }
-
                 
-
             } else {
                 $de = CartDetails::create([
                     "cart_id" => $c->id,
@@ -94,8 +95,7 @@ class CartController extends Controller
 
         $cart = Session::get('cart', []);
 
-        $productId = $data['books_id'];
-        $quantity = $data['quantity'];
+       
         if ($quantity <= 0) {
             unset($cart[$productId]);
         } else {
