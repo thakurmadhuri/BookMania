@@ -22,11 +22,11 @@ class OrderBooks extends Model
 
     public function order():BelongsTo
     {
-        return $this->belongsTo(Orders::class);
+        return $this->belongsTo(Orders::class,'order_id','id');
     }
 
     public function book():BelongsTo
     {
-        return $this->belongsTo(Books::class);
+        return $this->belongsTo(Books::class,'books_id','id');
     }
 }

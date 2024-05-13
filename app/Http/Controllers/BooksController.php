@@ -31,12 +31,26 @@ class BooksController extends Controller
         return view("books", compact("books"));
     }
 
-    public function list()//book list for user
+    // public function list()//book list for user
+    // {
+    //     $user = Auth::user();
+    //     $cart = Cart::with('cartdetails')->where("user_id", $user->id)->first();
+
+    //     $books = $this->getAll();
+    //     return view("book-list", compact("books", 'cart'));
+    // }
+
+    public function list(Request $request)
     {
         $user = Auth::user();
         $cart = Cart::with('cartdetails')->where("user_id", $user->id)->first();
 
-        $books = $this->getAll();
+        $query = $request->input('q');
+        $books = Books::where(function ($queryBuilder) use ($query) {
+            $queryBuilder->where('name', 'LIKE', '%' . $query . '%')
+                ->orWhere('description', 'LIKE', '%' . $query . '%');
+        })->get();
+
         return view("book-list", compact("books", 'cart'));
     }
 

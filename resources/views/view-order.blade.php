@@ -83,6 +83,9 @@
                                 $i=1;
                                 @endphp
                                 @foreach($order->books as $book)
+                                @php
+                                    //dd($book->book);
+                                @endphp
                             <tr>
                                 
                                 <td>{{$i}}</td>
