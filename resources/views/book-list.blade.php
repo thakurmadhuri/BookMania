@@ -19,6 +19,16 @@
                     $cart = Session::get('cart.'. $user->id, []);
                     @endphp
 
+                    <form action="{{ route('all-books') }}" method="GET" >
+                        <div class="input-group mb-3">
+                            <input type="text" name="q" placeholder="Search books..." class="form-control" id="inputGroupFile04"
+                                aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                            <button class="btn btn-outline-secondary" type="submit"
+                                id="inputGroupFileAddon04">Search</button>
+                        </div>
+                    </form>
+
+
                     <div class="row row-cols-1 row-cols-md-3 g-4">
                         @foreach($books as $book)
 
