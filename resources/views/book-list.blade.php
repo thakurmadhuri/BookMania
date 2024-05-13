@@ -15,7 +15,8 @@
                     @endif
 
                     @php
-                    $cart = Session::get('cart', []);
+                    $user=Auth::user();
+                    $cart = Session::get('cart.'. $user->id, []);
                     @endphp
 
                     <div class="row row-cols-1 row-cols-md-3 g-4">

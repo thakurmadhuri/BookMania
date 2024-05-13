@@ -25,6 +25,34 @@ class CartController extends Controller
         return view("cart", compact("cart", 'user'));
     }
 
+    public function removeItem(Request $request){
+        $validated = Validator::make($request->all(), [
+            'books_id' => 'required',
+            'cart_id' => 'required',
+        ]);
+        $user = Auth::user();
+
+        if ($validated->fails()) {
+            return redirect()->back()->withErrors($validated)->withInput();
+        }
+
+        $data = $request->all();
+        $de = CartDetails::where('cart_id', $data['cart_id'])->where('books_id', $data['books_id'])->first();
+        if ($de !== null) {
+            $de->delete();
+            $count = CartDetails::where('cart_id', $data['cart_id'])->count();
+            if($count==0){
+                Cart::where('id',$data['cart_id'])->delete();
+            }
+            $cart = Session::get('cart.'. $user->id, []);
+            unset($cart[$data['books_id']]);
+            return response()->json(200);
+        }
+        else{
+            return response()->json(500);
+        }
+    }
+
     public function store(Request $request)
     {
         $validated = Validator::make($request->all(), [
@@ -46,7 +74,6 @@ class CartController extends Controller
         $c = Cart::where('user_id', $user->id)->first();
         if ($c !== null) {
             $de = CartDetails::where('cart_id', $c->id)->where('books_id', $data['books_id'])->first();
-
             if (isset($de)) {
 
                 $c->total_price = $c->total_price - $de->total_book_price + floatval($data['total']);
@@ -103,7 +130,7 @@ class CartController extends Controller
             }
         }
 
-        $cart = Session::get('cart', []);
+        $cart = Session::get('cart.'. $user->id, []);
 
         if ($quantity <= 0) {
             unset($cart[$productId]);
@@ -115,14 +142,15 @@ class CartController extends Controller
             }
         }
 
-        Session::put('cart', $cart);
+        Session::put('cart.'. $user->id, $cart);
 
         return response()->json(200);
     }
 
     public function cartCount()
     {
-        $cart = Session::get('cart', []);
+        $user=Auth::user();
+        $cart = Session::get('cart.'. $user->id, []);
         $cartLength = count($cart);
         return response()->json(['count' => $cartLength]);
     }

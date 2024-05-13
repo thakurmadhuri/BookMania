@@ -36,7 +36,6 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                         @guest
                         @else
@@ -50,7 +49,8 @@
                         </li>
                         <li class="nav-item">
                             @php
-                            $cart = Session::get('cart', []);
+                            $user=Auth::user();
+                            $cart = Session::get('cart.'. $user->id, []);
                             $cartLength = count($cart);
                             @endphp
                             <a class="nav-link position-relative {{ request()->is('cart*') ? 'active' : '' }}"
@@ -69,7 +69,6 @@
                         @endguest
                     </ul>
 
-                    <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
                         <!-- Authentication Links -->
                         @guest

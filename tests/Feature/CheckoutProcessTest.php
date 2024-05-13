@@ -30,7 +30,7 @@ class CheckoutProcessTest extends TestCase
         $this->user = User::create([
             "name" => "sample",
             "email" => "sample@gmail.com",
-            "password" => bcrypt("password"),
+            "password" => bcrypt("Password@123"),
         ]);
         $this->user->assignRole('user');
 
