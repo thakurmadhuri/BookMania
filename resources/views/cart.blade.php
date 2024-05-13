@@ -6,7 +6,6 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">{{ __('Cart') }}</div>
-
                 <div class="card-body">
                     @if (session('status'))
                     <div class="alert alert-success" role="alert">
@@ -19,6 +18,9 @@
                     @endphp
 
                     @if(isset($cart) && count($cart)>0)
+                    @php
+                    // dd($cart);
+                    @endphp
                     @foreach($cart as $item)
                     @foreach($item['cartdetails'] as $book)
 
@@ -44,33 +46,35 @@
                                     <p class="card-text">By {{$book->author}}</p>
                                     <p class="card-text">{{$book->description}}</p>
                                     <div class="d-flex justify-content-between">
-                                        <p class="card-text">
-                                            <small class="text-muted">Quantity = {{$book->qty}}</small>
-                                            <!-- <div class="input-group">
+                                        <div class="input-group" style="width: 70%!important">
                                             <button class="minus btn btn-sm btn-outline-success"
                                                 data-bookid="{{ $book->id }}" type="button">-</button>
                                             <input type="text" value="{{$book->qty}}" style="width:30px;"
                                                 data-bookid="{{ $book->id }}" class="qty ps-1 pe-1" disabled>
                                             <button class="plus btn btn-sm btn-outline-success"
                                                 data-bookid="{{ $book->id }}" type="button">+</button>
-                                            </p>
-                                           
-                                        </div> -->
+                                        </div>
                                         <p class="card-text">
-                                            <small class="text-muted">Amount = ₹
-                                                {{number_format($subtotal, 2, '.', '')}}</small>
+                                            <small class="text-muted">
+                                                Amount = ₹
+                                                <span data-price="{{$book->price}}" data-bookid="{{ $book->id }}"
+                                                    class="subtotal">
+                                                    {{number_format($subtotal, 2, '.', '')}}
+                                                </span>
+                                            </small>
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     @endforeach
                     @endforeach
                     <div class="d-flex justify-content-evenly">
-                        <span class="fw-bold">
-                            Total Amount = ₹ {{ number_format($totalAmount, 2, '.', '') }}
+                        <span class="fw-bold ">
+                            Total Amount = ₹ <span class="total">
+                                {{ number_format($totalAmount, 2, '.', '') }}
+                            </span>
                         </span>
                         <a class="btn btn-success mb-2" href="{{route('checkout')}}">Proceed To Checkout</a>
                     </div>
@@ -89,6 +93,7 @@
             var input = $(".qty[data-bookid='" + bookId + "']");
             var value = parseInt(input.val()) + 1;
             input.val(value);
+            setPrice(bookId, value,'plus');
             addToCart(bookId, value);
         });
 
@@ -98,18 +103,34 @@
             var value = parseInt(input.val()) - 1;
             value = Math.max(value, 0);
             input.val(value);
-            addToCart(bookId, value);
+            setPrice(bookId, value,'minus');
             if (value == 0) {
-                $(".add[data-bookid='" + bookId + "']").show();
-                $(".counter[data-bookid='" + bookId + "']").hide();
+                $(this).prop('disabled', true);
             }
+            addToCart(bookId, value);
         });
+
+        function setPrice(bookId, qty,mode) {
+            var price = $('.subtotal[data-bookid="' + bookId + '"]').data('price'); //setting new price
+            $('.subtotal[data-bookid="' + bookId + '"]').text((price * qty).toFixed(2));
+
+            if(mode=='plus'){
+                var old_price= price*(qty-1);
+            }
+            else{
+                var old_price= price*(qty+1);
+            }
+            var new_price=price * qty;
+            var total = $('.total').text().trim().replace(/\s/g, '');
+            var final = total-old_price+new_price;
+            $('.total').text(final.toFixed(2));
+        }
 
         function addToCart(bookId, qty) {
             price = $("#price-" + bookId + "").val();
             total = price * qty;
             $.ajax({
-                url: '/store-cart', // Replace with the actual URL for saving the cart
+                url: '/store-cart',
                 type: 'POST',
                 data: {
                     books_id: bookId,

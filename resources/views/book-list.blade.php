@@ -94,7 +94,7 @@ $(document).ready(function() {
 
     function addToCart(bookId, qty) {
         price = $("#price-" + bookId + "").val();
-        total = price * qty;
+        total = parseFloat(price * qty);
         $.ajax({
             url: '/store-cart', // Replace with the actual URL for saving the cart
             type: 'POST',

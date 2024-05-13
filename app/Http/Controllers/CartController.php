@@ -58,7 +58,7 @@ class CartController extends Controller
                     $de->total_book_price = floatval($data['total']);
                     $de->save();
                 }
-                
+
             } else {
                 $de = CartDetails::create([
                     "cart_id" => $c->id,
@@ -71,8 +71,13 @@ class CartController extends Controller
             }
 
             $count = CartDetails::where('cart_id', $c->id)->count();
-            $c->total_qty = $count;
-            $c->save();
+            if($count==0){
+                $c->delete();
+            }
+            else{
+                $c->total_qty = $count;
+                $c->save();
+            }
 
         } else {
             $cart = Cart::create([
@@ -89,18 +94,22 @@ class CartController extends Controller
             ]);
 
             $count = CartDetails::where('cart_id', $cart->id)->count();
-            $cart->total_qty = $count;
-            $cart->save();
+            if($count==0){
+                $cart->delete();
+            }
+            else{
+                $cart->total_qty = $count;
+                $cart->save();
+            }
         }
 
         $cart = Session::get('cart', []);
 
-       
         if ($quantity <= 0) {
             unset($cart[$productId]);
         } else {
             if (isset($cart[$productId])) {
-                $cart[$productId] += $quantity;
+                $cart[$productId] = $quantity;
             } else {
                 $cart[$productId] = $quantity;
             }
