@@ -40,23 +40,24 @@ class CartController extends Controller
         $user = Auth::user();
         $data = $request->all();
 
+        $productId = $data['books_id'];
+        $quantity = $data['quantity'];
+
         $c = Cart::where('user_id', $user->id)->first();
         if ($c !== null) {
             $de = CartDetails::where('cart_id', $c->id)->where('books_id', $data['books_id'])->first();
 
             if (isset($de)) {
 
-                $c->total_price = $c->total_price - $de->total_book_price + $data['total'];
+                $c->total_price = $c->total_price - $de->total_book_price + floatval($data['total']);
 
                 if ($data['quantity'] == 0) {
                     $de->delete();
                 } else {
                     $de->qty = $data['quantity'];
-                    $de->total_book_price = $data['total'];
+                    $de->total_book_price = floatval($data['total']);
                     $de->save();
                 }
-
-                
 
             } else {
                 $de = CartDetails::create([
@@ -70,8 +71,13 @@ class CartController extends Controller
             }
 
             $count = CartDetails::where('cart_id', $c->id)->count();
-            $c->total_qty = $count;
-            $c->save();
+            if($count==0){
+                $c->delete();
+            }
+            else{
+                $c->total_qty = $count;
+                $c->save();
+            }
 
         } else {
             $cart = Cart::create([
@@ -88,19 +94,22 @@ class CartController extends Controller
             ]);
 
             $count = CartDetails::where('cart_id', $cart->id)->count();
-            $cart->total_qty = $count;
-            $cart->save();
+            if($count==0){
+                $cart->delete();
+            }
+            else{
+                $cart->total_qty = $count;
+                $cart->save();
+            }
         }
 
         $cart = Session::get('cart', []);
 
-        $productId = $data['books_id'];
-        $quantity = $data['quantity'];
         if ($quantity <= 0) {
             unset($cart[$productId]);
         } else {
             if (isset($cart[$productId])) {
-                $cart[$productId] += $quantity;
+                $cart[$productId] = $quantity;
             } else {
                 $cart[$productId] = $quantity;
             }
