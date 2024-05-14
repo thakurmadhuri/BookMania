@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('cart_id');
             $table->unsignedBigInteger('book_id');
             $table->Integer('qty');
-            $table->decimal('total_book_price');
+            $table->decimal('total_book_price', 10, 2);
             $table->foreign('cart_id')
                 ->references('id')->on('carts')
                 ->onDelete('cascade');
