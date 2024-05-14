@@ -3,16 +3,16 @@
 namespace Database\Factories;
 
 use App\Models\Cart;
-use App\Models\Books;
-use App\Models\CartDetails;
+use App\Models\Book;
+use App\Models\CartDetail;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CartDetails>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CartDetail>
  */
-class CartDetailsFactory extends Factory
+class CartDetailFactory extends Factory
 {
-    protected $model = CartDetails::class;
+    protected $model = CartDetail::class;
     
     /**
      * Define the model's default state.
@@ -22,7 +22,7 @@ class CartDetailsFactory extends Factory
     public function definition(): array
     {
         return [
-            'books_id' => Books::factory()->create()->id,
+            'book_id' => Book::factory()->create()->id,
             'qty' => $this->faker->numberBetween(1, 5),
             'total_book_price' => $this->faker->randomFloat(2, 10, 100),
         ];
@@ -30,7 +30,7 @@ class CartDetailsFactory extends Factory
 
     public function configure()
     {
-        return $this->afterCreating(function (CartDetails $cart, $attributes) {
+        return $this->afterCreating(function (CartDetail $cart, $attributes) {
             if (!isset($attributes['cart_id'])) {
                 if (isset($this->cart)) {
                     $cart->cart_id = $this->cart->id;

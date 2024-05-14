@@ -3,15 +3,15 @@
 namespace Database\Factories;
 
 use App\Models\User;
-use App\Models\UserAddresses;
+use App\Models\UserAddress;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UserAddresses>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UserAddress>
  */
-class UserAddressesFactory extends Factory
+class UserAddressFactory extends Factory
 {
-    protected $model = UserAddresses::class;
+    protected $model = UserAddress::class;
     /**
      * Define the model's default state.
      *
@@ -34,7 +34,7 @@ class UserAddressesFactory extends Factory
 
     public function configure()
     {
-        return $this->afterCreating(function (UserAddresses $address, $attributes) {
+        return $this->afterCreating(function (UserAddress $address, $attributes) {
             if (!isset($attributes['user_id'])) {
                 if (isset($this->user)) {
                     $address->user_id = $this->user->id;

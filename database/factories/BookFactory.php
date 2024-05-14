@@ -2,15 +2,15 @@
 
 namespace Database\Factories;
 
-use App\Models\Books;
+use App\Models\Book;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Books>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Book>
  */
-class BooksFactory extends Factory
+class BookFactory extends Factory
 {
-    protected $model = Books::class;
+    protected $model = Book::class;
 
     /**
      * Define the model's default state.
@@ -25,7 +25,7 @@ class BooksFactory extends Factory
             'price' => $this->faker->randomFloat(2, 10, 100), // Generate random price with two decimal places
             'author' => $this->faker->name,
             'category_id' => function () {
-                return \App\Models\Categories::factory()->create()->id;
+                return \App\Models\Category::factory()->create()->id;
             }
         ];
     }

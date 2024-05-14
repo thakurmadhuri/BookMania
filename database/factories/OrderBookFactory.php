@@ -2,16 +2,16 @@
 
 namespace Database\Factories;
 
-use App\Models\Books;
-use App\Models\OrderBooks;
+use App\Models\Book;
+use App\Models\OrderBook;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\OrderBooks>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\OrderBook>
  */
-class OrderBooksFactory extends Factory
+class OrderBookFactory extends Factory
 {
-    protected $model = OrderBooks::class;
+    protected $model = OrderBook::class;
     
     /**
      * Define the model's default state.
@@ -22,7 +22,7 @@ class OrderBooksFactory extends Factory
     {
         return [
             'books_id' => function () {
-                return Books::factory()->create()->id;
+                return Book::factory()->create()->id;
             },
             'qty' => $this->faker->randomNumber(1),
             'total_book_price' => $this->faker->randomFloat(2, 5, 50),

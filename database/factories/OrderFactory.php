@@ -3,16 +3,16 @@
 namespace Database\Factories;
 
 use App\Models\User;
-use App\Models\Orders;
-use App\Models\OrderBooks;
+use App\Models\Order;
+use App\Models\OrderBook;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Orders>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Order>
  */
-class OrdersFactory extends Factory
+class OrderFactory extends Factory
 {
-    protected $model = Orders::class;
+    protected $model = Order::class;
 
     /**
      * Define the model's default state.
@@ -40,8 +40,8 @@ class OrdersFactory extends Factory
 
     public function configure()
     {
-        return $this->afterCreating(function (Orders $order) {
-            $order->books()->saveMany(OrderBooks::factory()->count(2)->create(['order_id' => $order->id]));
+        return $this->afterCreating(function (Order $order) {
+            $order->books()->saveMany(OrderBook::factory()->count(2)->create(['order_id' => $order->id]));
         });
     }
 }
