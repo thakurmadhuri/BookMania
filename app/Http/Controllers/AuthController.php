@@ -16,7 +16,6 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             $token = $user->createToken('BookMania')->accessToken;
-            // dd($token);
             
             return response()->json(['token' => $token], 200);
         } else {

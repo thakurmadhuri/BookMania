@@ -16,6 +16,11 @@ class UserController extends Controller
 
     public function profile(){
         $user = Auth::user();
+        return $user;
+    }
+
+    public function edit(){
+        $user = $this->profile();
         return view("profile",compact("user"));
     }
 }

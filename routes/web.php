@@ -29,8 +29,7 @@ Route::get('users', [UserController::class, 'index']);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::group(['middleware' => ['auth']], function () {
-    // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::group(['middleware' => ['auth:web']], function () {
 
     Route::group(['middleware' => ['role:admin']], function () {
         Route::get('users', [UserController::class, 'index'])->name('users');
@@ -54,7 +53,7 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     Route::group(['middleware' => ['role:user']], function () {
-        Route::get('profile', [UserController::class, 'profile'])->name('profile');
+        Route::get('profile', [UserController::class, 'edit'])->name('profile');
         Route::get('all-books', [BooksController::class, 'list'])->name('all-books');
         Route::get('cart', [CartController::class, 'index'])->name('cart');
         Route::post('store-cart', [CartController::class, 'store'])->name('store-cart');
