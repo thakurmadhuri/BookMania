@@ -5,10 +5,10 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\Cart;
 use App\Models\User;
-use App\Models\Orders;
+use App\Models\Order;
 use App\Models\OrderBooks;
-use App\Models\CartDetails;
-use App\Models\UserAddresses;
+use App\Models\CartDetail;
+use App\Models\UserAddress;
 use Database\Seeders\RolesSeeder;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -47,7 +47,7 @@ class CheckoutProcessTest extends TestCase
 
         $cart = Cart::factory()->create(['user_id' => $this->user->id]);
 
-        CartDetails::factory()->create(['cart_id' => $cart->id]);
+        CartDetail::factory()->create(['cart_id' => $cart->id]);
 
         $response = $this->actingAs($this->user)
                          ->get(route('checkout'));
@@ -99,9 +99,9 @@ class CheckoutProcessTest extends TestCase
 
     public function test_place_order(){
         $cart = Cart::factory()->create(['user_id' => $this->user->id]);
-        $cartDetails = CartDetails::factory()->count(2)->create(['cart_id' => $cart->id]);
+        $cartDetails = CartDetail::factory()->count(2)->create(['cart_id' => $cart->id]);
 
-        $address = UserAddresses::factory()->create(['user_id' => $this->user->id]);
+        $address = UserAddress::factory()->create(['user_id' => $this->user->id]);
 
         $response = $this->actingAs($this->user)
             ->post(route('place-order'));
@@ -114,7 +114,7 @@ class CheckoutProcessTest extends TestCase
 
         foreach ($cartDetails as $cartDetail) {
             $this->assertDatabaseHas('order_books', [
-                'order_id' => Orders::latest()->first()->id,
+                'order_id' => Order::latest()->first()->id,
                 'books_id' => $cartDetail->books_id,
             ]);
         }

@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\Categories;
+use App\Models\Category;
 use Tests\TestCase;
 use App\Models\User;
-use App\Models\Books;
+use App\Models\Book;
 use Database\Seeders\RolesSeeder;
 use Spatie\Permission\Models\Role;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -39,7 +39,7 @@ class BookCrudTest extends TestCase
 
     public function test_can_create_book()
     {
-        Categories::factory()->create();
+        Category::factory()->create();
 
         $response = $this->post('/store-book', [
             'name' => 'Test Book',
@@ -67,8 +67,8 @@ class BookCrudTest extends TestCase
 
     public function test_can_edit_book()
     {
-        $category = Categories::factory()->create();
-        $book = Books::factory()->create();
+        $category = Category::factory()->create();
+        $book = Book::factory()->create();
 
         $response = $this->get(route('edit-book', ['id' => $book->id]));
 
@@ -84,8 +84,8 @@ class BookCrudTest extends TestCase
 
     public function test_can_update_book()
     {
-        $category = Categories::factory()->create();
-        $book = Books::factory()->create();
+        $category = Category::factory()->create();
+        $book = Book::factory()->create();
 
         $data = [
             'name' => 'Updated Book Name',
@@ -99,7 +99,7 @@ class BookCrudTest extends TestCase
 
         $response->assertStatus(302);
 
-        $updatedBook = Books::find($book->id);
+        $updatedBook = Book::find($book->id);
 
         $this->assertEquals($data['name'], $updatedBook->name);
         $this->assertEquals($data['description'], $updatedBook->description);
@@ -113,7 +113,7 @@ class BookCrudTest extends TestCase
 
     public function test_can_delete_book()
     {
-        $book = Books::factory()->create();
+        $book = Book::factory()->create();
         $response = $this->get(route('delete-book', ['id' => $book->id]));
         $response->assertStatus(302);
         // $this->assertDeleted($book);
