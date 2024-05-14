@@ -3,19 +3,19 @@
 namespace App\Models;
 
 use App\Models\Cart;
-use App\Models\Books;
+use App\Models\Book;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
  use Illuminate\Database\Eloquent\Relations\BelongsTo;
  use Illuminate\Database\Eloquent\SoftDeletes;
  
-class CartDetails extends Model
+class CartDetail extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
         "cart_id",
-        "books_id",
+        "book_id",
         "qty",
         "total_book_price",
     ];
@@ -27,6 +27,6 @@ class CartDetails extends Model
 
     public function book():BelongsTo
     {
-        return $this->belongsTo(Books::class);
+        return $this->belongsTo(Book::class);
     }
 }

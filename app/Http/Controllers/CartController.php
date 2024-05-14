@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
-use App\Models\CartDetails;
-use App\Models\UserAddresses;
+use App\Models\CartDetail;
+use App\Models\UserAddress;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +18,7 @@ class CartController extends Controller
         $user = Auth::user();
         $cart = Cart::with([
             'cartdetails' => function ($query) {
-                $query->join('books', 'cart_details.books_id', '=', 'books.id');
+                $query->join('books', 'cart_details.book_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->get();
 
@@ -27,7 +27,7 @@ class CartController extends Controller
 
     public function removeItem(Request $request){
         $validated = Validator::make($request->all(), [
-            'books_id' => 'required',
+            'book_id' => 'required',
             'cart_id' => 'required',
         ]);
         $user = Auth::user();
@@ -37,15 +37,15 @@ class CartController extends Controller
         }
 
         $data = $request->all();
-        $de = CartDetails::where('cart_id', $data['cart_id'])->where('books_id', $data['books_id'])->first();
+        $de = CartDetail::where('cart_id', $data['cart_id'])->where('book_id', $data['book_id'])->first();
         if ($de !== null) {
             $de->delete();
-            $count = CartDetails::where('cart_id', $data['cart_id'])->count();
+            $count = CartDetail::where('cart_id', $data['cart_id'])->count();
             if($count==0){
                 Cart::where('id',$data['cart_id'])->delete();
             }
             $cart = Session::get('cart.'. $user->id, []);
-            unset($cart[$data['books_id']]);
+            unset($cart[$data['book_id']]);
             return response()->json(200);
         }
         else{
@@ -56,7 +56,7 @@ class CartController extends Controller
     public function store(Request $request)
     {
         $validated = Validator::make($request->all(), [
-            'books_id' => 'required',
+            'book_id' => 'required',
             'quantity' => 'required',
             'total' => 'required',
         ]);
@@ -68,12 +68,12 @@ class CartController extends Controller
         $user = Auth::user();
         $data = $request->all();
 
-        $productId = $data['books_id'];
+        $productId = $data['book_id'];
         $quantity = $data['quantity'];
 
         $c = Cart::where('user_id', $user->id)->first();
         if ($c !== null) {
-            $de = CartDetails::where('cart_id', $c->id)->where('books_id', $data['books_id'])->first();
+            $de = CartDetail::where('cart_id', $c->id)->where('book_id', $data['book_id'])->first();
             if (isset($de)) {
 
                 $c->total_price = $c->total_price - $de->total_book_price + floatval($data['total']);
@@ -87,9 +87,9 @@ class CartController extends Controller
                 }
 
             } else {
-                $de = CartDetails::create([
+                $de = CartDetail::create([
                     "cart_id" => $c->id,
-                    "books_id" => $data['books_id'],
+                    "book_id" => $data['book_id'],
                     "qty" => $data['quantity'],
                     "total_book_price" => $data['total'],
                 ]);
@@ -97,7 +97,7 @@ class CartController extends Controller
                 $c->total_price = $c->total_price + $data['total'];
             }
 
-            $count = CartDetails::where('cart_id', $c->id)->count();
+            $count = CartDetail::where('cart_id', $c->id)->count();
             if($count==0){
                 $c->delete();
             }
@@ -113,14 +113,14 @@ class CartController extends Controller
                 'total_price' => $data['total'],
             ]);
 
-            $details = CartDetails::create([
+            $details = CartDetail::create([
                 "cart_id" => $cart->id,
-                "books_id" => $data['books_id'],
+                "book_id" => $data['book_id'],
                 "qty" => $data['quantity'],
                 "total_book_price" => $data['total'],
             ]);
 
-            $count = CartDetails::where('cart_id', $cart->id)->count();
+            $count = CartDetail::where('cart_id', $cart->id)->count();
             if($count==0){
                 $cart->delete();
             }
@@ -200,7 +200,7 @@ class CartController extends Controller
 
         $cart = Cart::with([
             'cartdetails' => function ($query) {
-                $query->join('books', 'cart_details.books_id', '=', 'books.id');
+                $query->join('books', 'cart_details.book_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->get();
 
@@ -226,7 +226,7 @@ class CartController extends Controller
 
         $user = auth()->user();
 
-        $address = UserAddresses::create([
+        $address = UserAddress::create([
             'user_id' => $user->id,
             'first_name' => $request->input('firstname'),
             'last_name' => $request->input('lastname'),

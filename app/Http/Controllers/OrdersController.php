@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
-use App\Models\Orders;
-use App\Models\OrderBooks;
-use App\Models\UserAddresses;
+use App\Models\Order;
+use App\Models\OrderBook;
+use App\Models\UserAddress;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -16,7 +16,7 @@ class OrdersController extends Controller
 
     public function allOrders()
     {
-        $orders = Orders::orderBy("created_at", "desc")->paginate(20);
+        $orders = Order::orderBy("created_at", "desc")->paginate(20);
 
         return view("all-orders", compact("orders"));
     }
@@ -27,20 +27,20 @@ class OrdersController extends Controller
 
         $cart = Cart::with([
             'cartdetails' => function ($query) {
-                $query->join('books', 'cart_details.books_id', '=', 'books.id');
+                $query->join('books', 'cart_details.book_id', '=', 'books.id');
             },
         ])->where("user_id", $user->id)->first();
 
-        $address = UserAddresses::where("user_id", $user->id)->first();
+        $address = UserAddress::where("user_id", $user->id)->first();
 
-        $latestOrder = Orders::orderBy('created_at', 'DESC')->first();
+        $latestOrder = Order::orderBy('created_at', 'DESC')->first();
         if ($latestOrder) {
             $id = '#ORD' . str_pad($latestOrder->id + 1, 8, "0", STR_PAD_LEFT);
         } else {
             $id = '#ORD' . str_pad(1, 8, "0", STR_PAD_LEFT);
         }
 
-        $order = Orders::create([
+        $order = Order::create([
             'order_id' => $id,
             'total_qty' => $cart->total_qty,
             'total_price' => $cart->total_price,
@@ -61,9 +61,9 @@ class OrdersController extends Controller
             $sub_total = $cartdetail->qty * $cartdetail->price;
             $total = $total + $sub_total;
 
-            OrderBooks::create([
+            OrderBook::create([
                 'order_id' => $order->id,
-                'books_id' => $cartdetail->books_id,
+                'book_id' => $cartdetail->book_id,
                 'qty' => $cartdetail->qty,
                 'total_book_price' => $sub_total,
             ]);
@@ -85,9 +85,9 @@ class OrdersController extends Controller
     public function completeOrder(Request $request)
     {
         $user = auth()->user();
-        $order = Orders::with([
+        $order = Order::with([
             'books' => function ($query) {
-                $query->join('books', 'order_books.books_id', '=', 'books.id');
+                $query->join('books', 'order_books.book_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->latest()->first();
 
@@ -97,9 +97,9 @@ class OrdersController extends Controller
     public function myOrders()
     {
         $user = auth()->user();
-        $orders = Orders::with([
+        $orders = Order::with([
             'books' => function ($query) {
-                $query->join('books', 'order_books.books_id', '=', 'books.id');
+                $query->join('books', 'order_books.book_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->orderBy('created_at', 'desc')->get();
 
@@ -108,7 +108,7 @@ class OrdersController extends Controller
 
     public function viewOrder($id)
     {
-        $order = Orders::with(
+        $order = Order::with(
             'books'
         )->where("id", $id)->first();
         return view("view-order", compact("order"));

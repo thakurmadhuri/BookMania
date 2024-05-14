@@ -25,46 +25,46 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-Route::get('users',  [UserController::class, 'index']);
+Route::get('users', [UserController::class, 'index']);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::group(['middleware' => ['auth']], function () { 
+Route::group(['middleware' => ['auth']], function () {
     // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     Route::group(['middleware' => ['role:admin']], function () {
-        Route::get('users',  [UserController::class, 'index'])->name('users');
+        Route::get('users', [UserController::class, 'index'])->name('users');
 
-        Route::get('books',  [BooksController::class, 'index'])->name('books');
-        Route::get('add-book',  [BooksController::class, 'add'])->name('add-book');
-        Route::post('store-book',  [BooksController::class, 'store'])->name('store-book');
+        Route::get('books', [BooksController::class, 'index'])->name('books');
+        Route::get('add-book', [BooksController::class, 'add'])->name('add-book');
+        Route::post('store-book', [BooksController::class, 'store'])->name('store-book');
         Route::get('edit-book/{id}', [BooksController::class, 'edit'])->name('edit-book');
         Route::post('update-book/{id}', [BooksController::class, 'update'])->name('update-book');
         Route::get('delete-book/{id}', [BooksController::class, 'delete'])->name('delete-book');
 
-        Route::get('categories',  [CategoriesController::class, 'index'])->name('categories');
-        Route::get('add-category',  [CategoriesController::class, 'add'])->name('add-category');
-        Route::post('store-category',  [CategoriesController::class, 'store'])->name('store-category');
+        Route::get('categories', [CategoriesController::class, 'index'])->name('categories');
+        Route::get('add-category', [CategoriesController::class, 'add'])->name('add-category');
+        Route::post('store-category', [CategoriesController::class, 'store'])->name('store-category');
         Route::get('edit-category/{id}', [CategoriesController::class, 'edit'])->name('edit-category');
         Route::post('update-category/{id}', [CategoriesController::class, 'update'])->name('update-category');
         Route::get('delete-category/{id}', [CategoriesController::class, 'delete'])->name('delete-category');
 
-        Route::get('orders',  [OrdersController::class, 'allOrders'])->name('orders');
-        Route::get('view-order/{id}',  [OrdersController::class, 'viewOrder'])->name('view-order');
-     });
+        Route::get('orders', [OrdersController::class, 'allOrders'])->name('orders');
+        Route::get('view-order/{id}', [OrdersController::class, 'viewOrder'])->name('view-order');
+    });
 
-     Route::group(['middleware' => ['role:user']], function () {
-        Route::get('profile',  [UserController::class, 'profile'])->name('profile');
-        Route::get('all-books',  [BooksController::class, 'list'])->name('all-books');
-        Route::get('cart',  [CartController::class, 'index'])->name('cart');
-        Route::post('store-cart',  [CartController::class, 'store'])->name('store-cart');
-        Route::post('remove-item',  [CartController::class, 'removeItem'])->name('remove-item');
-        Route::get('checkout',  [CartController::class, 'checkout'])->name('checkout');
-        Route::post('add-address',  [CartController::class, 'addAddress'])->name('add-address');
-        Route::post('place-order',  [OrdersController::class, 'placeOrder'])->name('place-order');
-        Route::get('complete-order',  [OrdersController::class, 'completeOrder'])->name('complete-order');
+    Route::group(['middleware' => ['role:user']], function () {
+        Route::get('profile', [UserController::class, 'profile'])->name('profile');
+        Route::get('all-books', [BooksController::class, 'list'])->name('all-books');
+        Route::get('cart', [CartController::class, 'index'])->name('cart');
+        Route::post('store-cart', [CartController::class, 'store'])->name('store-cart');
+        Route::post('remove-item', [CartController::class, 'removeItem'])->name('remove-item');
+        Route::get('checkout', [CartController::class, 'checkout'])->name('checkout');
+        Route::post('add-address', [CartController::class, 'addAddress'])->name('add-address');
+        Route::post('place-order', [OrdersController::class, 'placeOrder'])->name('place-order');
+        Route::get('complete-order', [OrdersController::class, 'completeOrder'])->name('complete-order');
         Route::get('cart/count', [CartController::class, 'cartCount'])->name('cart.count');
-        Route::get('my-orders',  [OrdersController::class, 'myOrders'])->name('my-orders');
-     });
+        Route::get('my-orders', [OrdersController::class, 'myOrders'])->name('my-orders');
+    });
 
- });
+});

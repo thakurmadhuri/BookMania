@@ -110,7 +110,7 @@ $(document).ready(function() {
             url: '/store-cart', // Replace with the actual URL for saving the cart
             type: 'POST',
             data: {
-                books_id: bookId,
+                book_id: bookId,
                 quantity: qty,
                 total: total
             },

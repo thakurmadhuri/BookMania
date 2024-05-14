@@ -13,15 +13,15 @@ return new class extends Migration {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_id');
-            $table->string('total_qty');
-            $table->decimal('total_price');
+            $table->unsignedInteger('total_qty');
+            $table->decimal('total_price', 10, 2); 
             $table->string('payment_method');
             $table->unsignedBigInteger('user_id');
             $table->string('first_name');
             $table->string('last_name');
             $table->text('address');
             $table->string('pincode', 6);
-            $table->string('mobile');
+            $table->string('mobile', 10);
             $table->string('city');
             $table->string('state');
             $table->string('country');

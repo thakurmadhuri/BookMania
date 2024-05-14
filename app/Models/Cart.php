@@ -21,10 +21,10 @@ class Cart extends Model
 
     public function cartdetails():HasMany
     {
-        return $this->hasMany(CartDetails::class);
+        return $this->hasMany(CartDetail::class);
     }
 
-    public function carts(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

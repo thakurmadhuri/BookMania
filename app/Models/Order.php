@@ -3,14 +3,14 @@
 namespace App\Models;
 
 use App\Models\User;
-use App\Models\OrderBooks;
+use App\Models\OrderBook;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Orders extends Model
+class Order extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -32,9 +32,8 @@ class Orders extends Model
 
     public function books():HasMany
     {
-        return $this->hasMany(OrderBooks::class,'order_id','id');
+        return $this->hasMany(OrderBook::class,'order_id','id');
     }
-
 
     public function user():BelongsTo
     {

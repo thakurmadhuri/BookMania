@@ -120,7 +120,7 @@
                 url: '/remove-item',
                 type: 'POST',
                 data: {
-                    books_id: bookId,
+                    book_id: bookId,
                     cart_id: cartId,
                 },
                 headers: {
@@ -157,7 +157,7 @@
                 url: '/store-cart',
                 type: 'POST',
                 data: {
-                    books_id: bookId,
+                    book_id: bookId,
                     quantity: qty,
                     total: total
                 },
