@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categories;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -11,12 +11,12 @@ use App\Http\Resources\CategoriesResource;
 class CategoriesController extends Controller
 {
     public function getAll(){ 
-        $categories = Categories::all();
-        return CategoriesResource::collection($categories);
+        $categories = Category::all();
+        return $categories;
     }
 
     public function getOne($id){ 
-        $category = Categories::find($id);
+        $category = Category::find($id);
         return $category;
     }
 
@@ -39,7 +39,7 @@ class CategoriesController extends Controller
             return redirect()->back()->withErrors($validated)->withInput();
         }
 
-        $cat = Categories::create([
+        $cat = Category::create([
             'name'=> $request->name,
         ]);
         return redirect("categories")->with("success","Category created successfully..!");
@@ -77,5 +77,4 @@ class CategoriesController extends Controller
         return redirect("categories")->with("success","Deleted successfully..!");
     }
 
-  
 }

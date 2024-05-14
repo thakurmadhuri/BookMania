@@ -2,26 +2,24 @@
 
 namespace App\Models;
 
-use App\Models\Categories;
+use App\Models\Book;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Books extends Model
+class Category extends Model
 {
     use HasFactory, SoftDeletes;
+
 
     protected $fillable = [
         'name',
         'description',
-        'price',
-        'author',
-        'category_id'
     ];
 
-    public function category():BelongsTo
+    public function books():HasMany
     {
-        return $this->belongsTo(Categories::class,'category_id','id');
+        return $this->hasMany(Book::class,'category_id','id');
     }
 }

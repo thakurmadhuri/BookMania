@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
-use App\Models\Books;
-use App\Models\Categories;
+use App\Models\Book;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BookResource;
@@ -15,13 +15,13 @@ class BooksController extends Controller
 {
     public function getAll()//book api
     {
-        $books = Books::all();
-        return BookResource::collection($books);
+        $books = Book::all();
+        return $books;
     }
 
     public function getOne($id)//get one book
     {
-        $book = Books::find($id);
+        $book = Book::find($id);
         return $book;
     }
 
@@ -46,7 +46,7 @@ class BooksController extends Controller
         $cart = Cart::with('cartdetails')->where("user_id", $user->id)->first();
 
         $query = $request->input('q');
-        $books = Books::where(function ($queryBuilder) use ($query) {
+        $books = Book::where(function ($queryBuilder) use ($query) {
             $queryBuilder->where('name', 'LIKE', '%' . $query . '%')
                 ->orWhere('description', 'LIKE', '%' . $query . '%');
         })->get();
@@ -56,7 +56,7 @@ class BooksController extends Controller
 
     public function AllCategories()
     {
-        $categories = Categories::all();
+        $categories = Category::all();
         return $categories;
     }
 
@@ -80,7 +80,7 @@ class BooksController extends Controller
             return redirect()->back()->withErrors($validated)->withInput();
         }
 
-        $book = Books::create([
+        $book = Book::create([
             'name' => $request->input('name'),
             'description' => $request->input('description'),
             'price' => $request->input('price'),
