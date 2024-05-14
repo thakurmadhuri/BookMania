@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
 {
-    public function index()
+    public function myCart(Request $request)
     {
         $user = Auth::user();
         $cart = Cart::with([
@@ -22,33 +22,41 @@ class CartController extends Controller
             }
         ])->where("user_id", $user->id)->get();
 
+        return $cart;
+    }
+
+    public function index(Request $request)//my cart for web
+    {
+        $user = Auth::user();
+        $cart = $this->myCart($request);
+
         return view("cart", compact("cart", 'user'));
     }
 
-    public function removeItem(Request $request){
+    public function removeItem(Request $request)
+    {
         $validated = Validator::make($request->all(), [
             'book_id' => 'required',
             'cart_id' => 'required',
         ]);
-        $user = Auth::user();
 
         if ($validated->fails()) {
             return redirect()->back()->withErrors($validated)->withInput();
         }
 
+        $user = Auth::user();
         $data = $request->all();
         $de = CartDetail::where('cart_id', $data['cart_id'])->where('book_id', $data['book_id'])->first();
         if ($de !== null) {
             $de->delete();
             $count = CartDetail::where('cart_id', $data['cart_id'])->count();
-            if($count==0){
-                Cart::where('id',$data['cart_id'])->delete();
+            if ($count == 0) {
+                Cart::where('id', $data['cart_id'])->delete();
             }
-            $cart = Session::get('cart.'. $user->id, []);
+            $cart = Session::get('cart.' . $user->id, []);
             unset($cart[$data['book_id']]);
             return response()->json(200);
-        }
-        else{
+        } else {
             return response()->json(500);
         }
     }
@@ -98,10 +106,9 @@ class CartController extends Controller
             }
 
             $count = CartDetail::where('cart_id', $c->id)->count();
-            if($count==0){
+            if ($count == 0) {
                 $c->delete();
-            }
-            else{
+            } else {
                 $c->total_qty = $count;
                 $c->save();
             }
@@ -121,16 +128,15 @@ class CartController extends Controller
             ]);
 
             $count = CartDetail::where('cart_id', $cart->id)->count();
-            if($count==0){
+            if ($count == 0) {
                 $cart->delete();
-            }
-            else{
+            } else {
                 $cart->total_qty = $count;
                 $cart->save();
             }
         }
 
-        $cart = Session::get('cart.'. $user->id, []);
+        $cart = Session::get('cart.' . $user->id, []);
 
         if ($quantity <= 0) {
             unset($cart[$productId]);
@@ -142,17 +148,22 @@ class CartController extends Controller
             }
         }
 
-        Session::put('cart.'. $user->id, $cart);
+        Session::put('cart.' . $user->id, $cart);
 
         return response()->json(200);
     }
 
     public function cartCount()
     {
-        $user=Auth::user();
-        $cart = Session::get('cart.'. $user->id, []);
-        $cartLength = count($cart);
-        return response()->json(['count' => $cartLength]);
+        $user = Auth::user();
+        $c = Cart::where('user_id', $user->id)->first();
+        if (isset($c)) {
+            $cartLength = CartDetail::where('cart_id', $c->id)->count();
+            return response()->json(['count' => $cartLength]);
+        }
+        else{
+            return response()->json(['count' => 0]);
+        }
     }
 
     public function checkout(Request $request)
