@@ -23,7 +23,7 @@
                 
                     <input type="hidden" id="cart-id" name="cart-id" value="{{$item->id}}">
                     
-                    @foreach($item['cartdetails'] as $book)
+                    @foreach($item['cartDetails'] as $book)
 
                     @php
                     $subtotal = $book->price * $book->qty;

@@ -193,7 +193,7 @@
                                     @endphp
 
                                     @foreach($cart as $item)
-                                    @foreach($item['cartdetails'] as $book)
+                                    @foreach($item['cartDetails'] as $book)
                                     @php
                                     $subtotal = $book->price * $book->qty;
                                     $totalAmount += $subtotal;
