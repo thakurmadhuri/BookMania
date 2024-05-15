@@ -10,6 +10,7 @@ use App\Http\Controllers\CategoriesController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/change-password', [AuthController::class, 'changePassword']);
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/token', [AuthController::class, 'token']);
@@ -23,5 +24,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('my-orders', [OrdersController::class, 'getMyOrders']);
     Route::post('store-cart', [CartController::class, 'store']);
     Route::post('place-order', [OrdersController::class, 'placeOrder']);
+    Route::get('get-last-order', [OrdersController::class, 'getLastOrder']);
 
 });
