@@ -20,6 +20,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('cart/count', [CartController::class, 'cartCount']);
     Route::post('remove-item', [CartController::class, 'removeItem']);
     Route::post('add-address', [CartController::class, 'addAddress']);
-    Route::get('my-orders', [OrdersController::class, 'getMyOrders'])->name('my-orders');
-    Route::post('store-cart', [CartController::class, 'store'])->name('store-cart');
+    Route::get('my-orders', [OrdersController::class, 'getMyOrders']);
+    Route::post('store-cart', [CartController::class, 'store']);
+    Route::post('place-order', [OrdersController::class, 'placeOrder']);
+
 });

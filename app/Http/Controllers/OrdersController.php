@@ -77,9 +77,11 @@ class OrdersController extends Controller
         Session::forget('cart');
 
         if ($order) {
-            return response()->json(200);
+            return response()->json(['message'=>"Order placed successfully..!"],200);
         }
-
+        else{
+            return response()->json(["message"=> "Error while placing order"],500);
+        }
     }
 
     public function completeOrder(Request $request)
