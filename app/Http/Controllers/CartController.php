@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
 use App\Models\Cart;
 use App\Models\CartDetail;
 use App\Models\UserAddress;
@@ -17,7 +18,7 @@ class CartController extends Controller
     {
         $user = Auth::user();
         $cart = Cart::with([
-            'cartdetails' => function ($query) {
+            'cartDetails' => function ($query) {
                 $query->join('books', 'cart_details.book_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->get();
@@ -73,8 +74,14 @@ class CartController extends Controller
             return redirect()->back()->withErrors($validated)->withInput();
         }
 
-        $user = Auth::user();
         $data = $request->all();
+
+        $book = Book::where('id', $data['book_id'])->first();
+        if (!isset($book)) {
+            return response()->json(['message' => "Book not found"], 404);
+        }
+
+        $user = Auth::user();
 
         $productId = $data['book_id'];
         $quantity = $data['quantity'];
@@ -103,6 +110,7 @@ class CartController extends Controller
                 ]);
 
                 $c->total_price = $c->total_price + $data['total'];
+
             }
 
             $count = CartDetail::where('cart_id', $c->id)->count();
@@ -150,7 +158,7 @@ class CartController extends Controller
 
         Session::put('cart.' . $user->id, $cart);
 
-        return response()->json(200);
+        return response()->json(['message' => "Item added in cart"], 200);
     }
 
     public function cartCount()
@@ -160,8 +168,7 @@ class CartController extends Controller
         if (isset($c)) {
             $cartLength = CartDetail::where('cart_id', $c->id)->count();
             return response()->json(['count' => $cartLength]);
-        }
-        else{
+        } else {
             return response()->json(['count' => 0]);
         }
     }
@@ -210,7 +217,7 @@ class CartController extends Controller
         ];
 
         $cart = Cart::with([
-            'cartdetails' => function ($query) {
+            'cartDetails' => function ($query) {
                 $query->join('books', 'cart_details.book_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->get();
@@ -251,9 +258,9 @@ class CartController extends Controller
         ]);
 
         if ($address) {
-            return response()->json(200);
+            return response()->json(['message' => 'Address inserted successfully'], 200);
         } else {
-            return response()->json(500);
+            return response()->json(['message' => 'Unable to insert address'], 500);
         }
 
     }

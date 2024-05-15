@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Orders;
-use App\Models\UserAddresses;
+use App\Models\Order;
+use App\Models\UserAddress;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
@@ -15,7 +15,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasRoles, CascadeSoftDeletes;
+
+    protected $cascadeDeletes = ['orders','carts','addresses'];
+
 
     protected $guard_name = 'api';
 
@@ -49,18 +52,18 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function Orders():HasMany
+    public function orders():HasMany
     {
-        return $this->hasMany(Orders::class);
+        return $this->hasMany(Order::class);
     }
 
-    public function Carts():HasMany
+    public function carts():HasMany
     {
         return $this->hasMany(Cart::class);
     }
 
-    public function Addresses():HasMany
+    public function addresses():HasMany
     {
-        return $this->hasMany(UserAddresses::class);
+        return $this->hasMany(UserAddress::class);
     }
 }

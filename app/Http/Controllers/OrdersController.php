@@ -26,7 +26,7 @@ class OrdersController extends Controller
         $user = auth()->user();
 
         $cart = Cart::with([
-            'cartdetails' => function ($query) {
+            'cartDetails' => function ($query) {
                 $query->join('books', 'cart_details.book_id', '=', 'books.id');
             },
         ])->where("user_id", $user->id)->first();
@@ -57,7 +57,7 @@ class OrdersController extends Controller
         ]);
 
         $total = 0;
-        foreach ($cart->cartdetails as $cartdetail) {
+        foreach ($cart->cartDetails as $cartdetail) {
             $sub_total = $cartdetail->qty * $cartdetail->price;
             $total = $total + $sub_total;
 
@@ -94,7 +94,7 @@ class OrdersController extends Controller
         return view("complete-order", compact("order"));
     }
 
-    public function myOrders()
+    public function getMyOrders()
     {
         $user = auth()->user();
         $orders = Order::with([
@@ -102,6 +102,12 @@ class OrdersController extends Controller
                 $query->join('books', 'order_books.book_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->orderBy('created_at', 'desc')->get();
+        return $orders;
+    }
+
+    public function myOrders()
+    {
+        $orders = $this->myOrders();
 
         return view("my-orders", compact("orders"));
     }

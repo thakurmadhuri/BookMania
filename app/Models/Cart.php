@@ -5,13 +5,16 @@ namespace App\Models;
 use App\Models\CartDetails;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Cart extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes;
+
+    protected $cascadeDeletes = ['cartDetails'];
 
     protected $fillable = [
         'total_qty',
@@ -19,9 +22,9 @@ class Cart extends Model
         'user_id',
     ];
 
-    public function cartdetails():HasMany
+    public function cartDetails():HasMany
     {
-        return $this->hasMany(CartDetail::class);
+        return $this->hasMany(CartDetail::class,'cart_id','id');
     }
 
     public function user(): BelongsTo
@@ -31,7 +34,7 @@ class Cart extends Model
 
     // public function getTotalPriceAttribute()
     // {
-    //     return $this->cartdetails->sum(function ($item) {
+    //     return $this->cartDetails->sum(function ($item) {
     //         return $item->book->price * $item->qty;
     //     });
     // }

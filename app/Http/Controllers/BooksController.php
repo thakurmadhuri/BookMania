@@ -34,7 +34,7 @@ class BooksController extends Controller
     // public function list()//book list for user
     // {
     //     $user = Auth::user();
-    //     $cart = Cart::with('cartdetails')->where("user_id", $user->id)->first();
+    //     $cart = Cart::with('cartDetails')->where("user_id", $user->id)->first();
 
     //     $books = $this->getAll();
     //     return view("book-list", compact("books", 'cart'));
@@ -43,7 +43,7 @@ class BooksController extends Controller
     public function list(Request $request)
     {
         $user = Auth::user();
-        $cart = Cart::with('cartdetails')->where("user_id", $user->id)->first();
+        $cart = Cart::with('cartDetails')->where("user_id", $user->id)->first();
 
         $query = $request->input('q');
         $books = Book::where(function ($queryBuilder) use ($query) {
@@ -123,6 +123,7 @@ class BooksController extends Controller
         if (!$book) {
             return response()->json(['message' => 'Book not found'], 404);
         }
+        // $book->cartDetail()->delete();
         $book->delete();
 
         return redirect("books")->with("success", "Deleted successfully..!");
