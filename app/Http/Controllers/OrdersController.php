@@ -84,8 +84,7 @@ class OrdersController extends Controller
         }
     }
 
-    public function completeOrder(Request $request)
-    {
+    public function getLastOrder(){
         $user = auth()->user();
         $order = Order::with([
             'books' => function ($query) {
@@ -93,6 +92,12 @@ class OrdersController extends Controller
             }
         ])->where("user_id", $user->id)->latest()->first();
 
+        return $order;
+    }
+
+    public function completeOrder(Request $request)
+    {
+        $order = $this->getLastOrder();
         return view("complete-order", compact("order"));
     }
 
