@@ -32,10 +32,5 @@ class Cart extends Model
         return $this->belongsTo(User::class);
     }
 
-    // public function getTotalPriceAttribute()
-    // {
-    //     return $this->cartDetails->sum(function ($item) {
-    //         return $item->book->price * $item->qty;
-    //     });
-    // }
+
 }

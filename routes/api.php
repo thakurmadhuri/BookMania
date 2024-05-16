@@ -28,6 +28,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('place-order', [OrdersController::class, 'placeOrder']);
     Route::get('my-orders', [OrdersController::class, 'getMyOrders']);
     Route::get('get-last-order', [OrdersController::class, 'getLastOrder']);
-    
+
     Route::post('/logout', [AuthController::class, 'logout']);
 });
