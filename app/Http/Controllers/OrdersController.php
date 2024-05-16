@@ -109,12 +109,13 @@ class OrdersController extends Controller
                 $query->join('books', 'order_books.book_id', '=', 'books.id');
             }
         ])->where("user_id", $user->id)->orderBy('created_at', 'desc')->get();
+
         return $orders;
     }
 
     public function myOrders()
     {
-        $orders = $this->myOrders();
+        $orders = $this->getMyOrders();
 
         return view("my-orders", compact("orders"));
     }
@@ -126,5 +127,4 @@ class OrdersController extends Controller
         )->where("id", $id)->first();
         return view("view-order", compact("order"));
     }
-
 }

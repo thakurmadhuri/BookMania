@@ -58,7 +58,6 @@ class AuthController extends Controller
 
     public function changePassword(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'password' => [
                 'required',
@@ -67,9 +66,11 @@ class AuthController extends Controller
                 'confirmed',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_@#$%^&*!])[A-Za-z\d@_]{8,}$/'
             ],
-        ], [
+        ]
+        , [
             'password' => 'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character and be at least 8 characters long.',
-        ]);
+        ]
+    );
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
@@ -87,5 +88,11 @@ class AuthController extends Controller
     public function token(Request $request)
     {
         return response()->json(['user' => $request->user()]);
+    }
+
+    public function logout(Request $request){
+        $request->user()->token()->revoke();
+
+        return response()->json(['message' => 'Successfully logged out'],200);
     }
 }
