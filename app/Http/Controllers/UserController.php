@@ -9,18 +9,21 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $users = User::all();
-        return view("users",compact("users"));
+        return view("users", compact("users"));
     }
 
-    public function profile(){
+    public function profile()
+    {
         $user = Auth::user();
         return $user;
     }
 
-    public function edit(){
+    public function edit()
+    {
         $user = $this->profile();
-        return view("profile",compact("user"));
+        return view("profile", compact("user"));
     }
 }

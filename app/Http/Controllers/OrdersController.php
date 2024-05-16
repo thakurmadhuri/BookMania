@@ -77,14 +77,14 @@ class OrdersController extends Controller
         Session::forget('cart');
 
         if ($order) {
-            return response()->json(['message'=>"Order placed successfully..!"],200);
-        }
-        else{
-            return response()->json(["message"=> "Error while placing order"],500);
+            return response()->json(['message' => "Order placed successfully..!"], 200);
+        } else {
+            return response()->json(["message" => "Error while placing order"], 500);
         }
     }
 
-    public function getLastOrder(){
+    public function getLastOrder()
+    {
         $user = auth()->user();
         $order = Order::with([
             'books' => function ($query) {

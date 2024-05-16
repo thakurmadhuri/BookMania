@@ -29,4 +29,8 @@ class CartDetail extends Model
     {
         return $this->belongsTo(Book::class);
     }
+
+    public function countPrice(){
+        return $this->book->price * $this->qty;
+    }
 }

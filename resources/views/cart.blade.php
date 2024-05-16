@@ -6,6 +6,7 @@
         <div class="col-md-8">
             @if(isset($cart) && count($cart)>0)
 
+
             <div class="card">
                 <div class="card-header">{{ __('Cart') }}</div>
                 <div class="card-body">
@@ -20,13 +21,14 @@
                     @endphp
 
                     @foreach($cart as $item)
-                
-                    <input type="hidden" id="cart-id" name="cart-id" value="{{$item->id}}">
-                    
-                    @foreach($item['cartDetails'] as $book)
 
+                    <input type="hidden" id="cart-id" name="cart-id" value="{{$item->id}}">
+
+                    @foreach($item['cartDetails'] as $book)
                     @php
-                    $subtotal = $book->price * $book->qty;
+                    //dd($book->countPrice());
+                   
+                    $subtotal = $book->countPrice();
                     $totalAmount += $subtotal;
                     @endphp
 

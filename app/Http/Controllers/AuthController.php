@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -13,14 +14,13 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
-
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             $token = $user->createToken('BookMania')->accessToken;
 
             return response()->json(['token' => $token], 200);
         } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Invalid Credentials'], 401);
         }
     }
 
@@ -47,7 +47,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => Hash::make($request->password),
         ]);
 
         $user->assignRole('user');
@@ -58,19 +58,22 @@ class AuthController extends Controller
 
     public function changePassword(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-                'confirmed',
-                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_@#$%^&*!])[A-Za-z\d@_]{8,}$/'
-            ],
-        ]
-        , [
-            'password' => 'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character and be at least 8 characters long.',
-        ]
-    );
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'confirmed',
+                    'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_@#$%^&*!])[A-Za-z\d@_]{8,}$/'
+                ],
+            ]
+            ,
+            [
+                'password' => 'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character and be at least 8 characters long.',
+            ]
+        );
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
@@ -80,7 +83,7 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
-        $user->password = bcrypt($request->password);
+        $user->password = Hash::make($request->password);
         $user->save();
         return response()->json(['message' => 'Password changes successfully..!'], 200);
     }
@@ -90,9 +93,10 @@ class AuthController extends Controller
         return response()->json(['user' => $request->user()]);
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         $request->user()->token()->revoke();
 
-        return response()->json(['message' => 'Successfully logged out'],200);
+        return response()->json(['message' => 'Successfully logged out'], 200);
     }
 }
