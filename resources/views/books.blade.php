@@ -36,7 +36,7 @@
                         </thead>
                         <tbody>
                             @php
-                            $i=1;
+                            $i = 1;
 
                             @endphp
                             @foreach($books as $book)
@@ -53,7 +53,7 @@
                                 <td>{{ $book->price}}</td>
                                 <td>{{  $book->category['name']}}</td>
                                 <td>
-                                    <a class="btn btn-success" href="{{ route('edit-book', ['id' => $book->id ]) }}">
+                                    <a class="btn btn-success" href="{{ route('edit-book', ['id' => $book->id]) }}">
                                         Edit </a>
                                     <a class="btn btn-danger delete-book"
                                         href="{{ route('delete-book', ['id' => '__ID__']) }}" data-id="{{ $book->id }}">
@@ -72,29 +72,28 @@
     </div>
 </div>
 <script>
-document.querySelectorAll('.delete-book').forEach(button => {
-    button.addEventListener('click', function(event) {
+$(document).ready(function() {
+    $('.delete-book').on('click', function(event) {
         event.preventDefault();
+        let $this = $(this);
         swal({
-                buttons: ["Cancel", 'Yes'],
-                title: "Are you sure?",
-                text: "Once deleted, you will not be able to recover this data!",
-                icon: "warning",
-                // buttons: true,
-                dangerMode: true,
-            })
-            .then((willDelete) => {
-                if (willDelete) {
-                    let id = this.getAttribute('data-id');
-                    let deleteUrl = this.getAttribute('href').replace('__ID__', id);
-                    window.location.href = deleteUrl;
-                    swal("Your data has been deleted!", {
-                        icon: "success",
-                    });
-                } else {
-                    swal("Your data is safe!");
-                }
-            });
+            buttons: ["Cancel", 'Yes'],
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this data!",
+            icon: "warning",
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                let id = $this.data('id');
+                let deleteUrl = $this.attr('href').replace('__ID__', id);
+                window.location.href = deleteUrl;
+                swal("Your data has been deleted!", {
+                    icon: "success",
+                });
+            } else {
+                swal("Your data is safe!");
+            }
+        });
     });
 });
 </script>

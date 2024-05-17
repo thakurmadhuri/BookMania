@@ -61,7 +61,9 @@ class RegisterController extends Controller
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_@#$%^&*!])[A-Za-z\d@_]{8,}$/'
             ],
         ], [
-            'password' => 'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character and be at least 8 characters long.',
+            'password.min' => 'Password must be at least 8 characters long.',
+            'password.confirmed' => 'Passwords do not match.',
+            'password.regex' => 'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character.',
         ]);
     }
 

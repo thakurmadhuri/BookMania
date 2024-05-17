@@ -33,8 +33,8 @@
                                 <td>{{ $user->name}}</td>
                                 <td>{{ $user->email}}</td>
                                 <td>
-                                    <button class="btn btn-success"> Edit </button>
-                                    <button class="btn btn-danger"> Delete </button>
+                                    <!-- <button class="btn btn-success"> Edit </button> -->
+                                    <a href="{{route('delete-user', ['id' => '__ID__']) }}" data-id="{{ $user->id }}"class="btn btn-danger delete-user"> Delete </a>
                                 </td>
                             </tr>
                             @php
@@ -48,4 +48,30 @@
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function() {
+    $('.delete-user').on('click', function(event) {
+        event.preventDefault();
+        let $this = $(this);
+        swal({
+            buttons: ["Cancel", 'Yes'],
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this data!",
+            icon: "warning",
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                let id = $this.data('id');
+                let deleteUrl = $this.attr('href').replace('__ID__', id);
+                window.location.href = deleteUrl;
+                swal("Your data has been deleted!", {
+                    icon: "success",
+                });
+            } else {
+                swal("Your data is safe!");
+            }
+        });
+    });
+});
+</script>
 @endsection

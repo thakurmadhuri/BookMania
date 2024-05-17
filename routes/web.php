@@ -33,6 +33,7 @@ Route::group(['middleware' => ['auth:web']], function () {
 
     Route::group(['middleware' => ['role:admin']], function () {
         Route::get('users', [UserController::class, 'index'])->name('users');
+        Route::get('delete-user/{id}', [UserController::class, 'delete'])->name('delete-user');
 
         Route::get('books', [BooksController::class, 'index'])->name('books');
         Route::get('add-book', [BooksController::class, 'add'])->name('add-book');

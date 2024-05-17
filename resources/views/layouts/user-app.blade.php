@@ -117,6 +117,7 @@
             .then(response => response.json())
             .then(data => {
                 const cartBadge = document.getElementById('cartBadge');
+                console.log(cartBadge.textContent);
                 if (cartBadge !== null) {
                     if (cartBadge.classList.contains('d-none')) {
                         cartBadge.classList.remove('d-none');
