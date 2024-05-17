@@ -88,11 +88,6 @@ class AuthController extends Controller
         return response()->json(['message' => 'Password changes successfully..!'], 200);
     }
 
-    public function token(Request $request)
-    {
-        return response()->json(['user' => $request->user()]);
-    }
-
     public function logout(Request $request)
     {
         $request->user()->token()->revoke();

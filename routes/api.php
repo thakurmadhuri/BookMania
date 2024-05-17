@@ -11,9 +11,8 @@ use App\Http\Controllers\CategoriesController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api', 'api'])->group(function () {
     Route::post('/change-password', [AuthController::class, 'changePassword']);
-    Route::get('/token', [AuthController::class, 'token']);
     Route::get('profile', [UserController::class, 'profile']);
 
     Route::get('book/all', [BooksController::class, 'getAll']);

@@ -74,7 +74,7 @@ class OrdersController extends Controller
 
         $cart->delete();
 
-        Session::forget('cart');
+        Session::forget('cart'.$user->id);
 
         if ($order) {
             return response()->json(['message' => "Order placed successfully..!"], 200);

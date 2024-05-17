@@ -26,4 +26,13 @@ class UserController extends Controller
         $user = $this->profile();
         return view("profile", compact("user"));
     }
+
+    public function delete(Request $request,$id){
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        $user->delete();
+        return redirect("users")->with("success", "Deleted successfully..!");
+    }
 }
