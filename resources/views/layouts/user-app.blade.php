@@ -51,7 +51,6 @@
                             @php
                             $user=Auth::user();
                             $cart = Session::get('cart.'. $user->id, []);
-                            Session::put('cart'.$user->id,[]);
                             $cartLength = count($cart);
                             @endphp
                             <a class="nav-link position-relative {{ request()->is('cart*') ? 'active' : '' }}"
