@@ -43,8 +43,8 @@
                             <tr>
                                 <td>{{$i}}</td>
                                 <td>
-                                    <img src="{{ asset('images/book1.jpg') }}" class="card-img-top"
-                                        alt="{{ $book->name}}" style=" height: 50px; width: 70px;">
+                                    <img src="{{ asset($book->image) }}" class="card-img-top" alt="{{ $book->name}}"
+                                        style=" height: 50px; width: 70px;">
                                 </td>
                                 <td style="width: 22%;">{{ $book->name}}
                                 </td>
@@ -66,6 +66,8 @@
                             @endforeach
                         </tbody>
                     </table>
+
+                    {{ $books->links() }}
                 </div>
             </div>
         </div>

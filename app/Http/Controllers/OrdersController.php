@@ -67,11 +67,15 @@ class OrdersController extends Controller
                 'qty' => $cartdetail->qty,
                 'total_book_price' => $sub_total,
             ]);
+
+            $cartSession = Session::get('cart.' . $user->id,[]);
+            unset($cartSession[$cartdetail->book_id]);
+            Session::put('cart.' . $user->id, $cartSession);
         }
 
         $order->total_price = $total;
         $order->save();
-
+        
         $cart->delete();
 
         Session::forget('cart'.$user->id);
