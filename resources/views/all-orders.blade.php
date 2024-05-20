@@ -61,9 +61,8 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="d-felx justify-content-center">
-                        {{ $orders->links() }}
-                    </div>
+
+                    {{ $orders->links() }}
                 </div>
             </div>
         </div>

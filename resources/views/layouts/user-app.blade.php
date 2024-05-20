@@ -51,6 +51,7 @@
                             @php
                             $user=Auth::user();
                             $cart = Session::get('cart.'. $user->id, []);
+                            Session::put('cart'.$user->id,[]);
                             $cartLength = count($cart);
                             @endphp
                             <a class="nav-link position-relative {{ request()->is('cart*') ? 'active' : '' }}"
@@ -70,7 +71,6 @@
                     </ul>
 
                     <ul class="navbar-nav ms-auto">
-                        <!-- Authentication Links -->
                         @guest
                         @if (Route::has('login'))
                         <li class="nav-item">

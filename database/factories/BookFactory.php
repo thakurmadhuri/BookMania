@@ -20,6 +20,7 @@ class BookFactory extends Factory
     public function definition(): array
     {
         return [
+            'image'=>'images/book1.jpg',
             'name' => $this->faker->sentence,
             'description' => $this->faker->paragraph,
             'price' => $this->faker->randomFloat(2, 10, 100), // Generate random price with two decimal places

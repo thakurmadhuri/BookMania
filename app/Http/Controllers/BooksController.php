@@ -27,18 +27,9 @@ class BooksController extends Controller
 
     public function index()//book list for admin
     {
-        $books = $this->getAll();
+        $books = Book::paginate(10);
         return view("books", compact("books"));
     }
-
-    // public function list()//book list for user
-    // {
-    //     $user = Auth::user();
-    //     $cart = Cart::with('cartDetails')->where("user_id", $user->id)->first();
-
-    //     $books = $this->getAll();
-    //     return view("book-list", compact("books", 'cart'));
-    // }
 
     public function list(Request $request)
     {
@@ -73,11 +64,19 @@ class BooksController extends Controller
             'description' => 'required',
             'price' => 'required',
             'author' => 'required|max:255',
-            'category_id' => 'required'
+            'category_id' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($validated->fails()) {
             return redirect()->back()->withErrors($validated)->withInput();
+        }
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/images');
+            $image->move($destinationPath, $name);
         }
 
         $book = Book::create([
@@ -85,7 +84,8 @@ class BooksController extends Controller
             'description' => $request->input('description'),
             'price' => $request->input('price'),
             'author' => $request->input('author'),
-            'category_id' => $request->input('category_id')
+            'category_id' => $request->input('category_id'),
+            'image'=>'/images/'.$name
         ]);
 
         return redirect("books")->with("success", "Book added successfully..!");
@@ -104,6 +104,15 @@ class BooksController extends Controller
 
         if (!$book) {
             return response()->json(['message' => 'Book not found'], 404);
+        }
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $name = time().'.'.$image->getClientOriginalExtension();
+            $destinationPath = public_path('/images');
+            $image->move($destinationPath, $name);
+
+            $book->image='/images/'.$name;
         }
 
         $book->name = $request->input('name');

@@ -37,3 +37,4 @@ class UserController extends Controller
         return redirect("users")->with("success", "Deleted successfully..!");
     }
 }
+

@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
-use App\Models\Category;
 use Tests\TestCase;
-use App\Models\User;
 use App\Models\Book;
+use App\Models\User;
+use App\Models\Category;
 use Database\Seeders\RolesSeeder;
+use Illuminate\Http\UploadedFile;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -38,32 +40,41 @@ class BookCrudTest extends TestCase
     }
 
     public function test_can_create_book()
-    {
-        Category::factory()->create();
+{
+    Storage::fake('public');
 
-        $response = $this->post('/store-book', [
-            'name' => 'Test Book',
-            'description' => 'Test Description',
-            'price' => 10.50,
-            'author' => 'Test Author',
-            'category_id' => 1
-        ], [
-            '_token' => csrf_token(),
-        ]);
+    $file = UploadedFile::fake()->image('images/book1.jpg');
 
-        $response->assertStatus(302);
+    Category::factory()->create();
 
-        $this->assertDatabaseHas('books', [
-            'name' => 'Test Book',
-            'description' => 'Test Description',
-            'price' => 10.50,
-            'author' => 'Test Author',
-            'category_id' => 1,
-        ]);
+    $response = $this->post('/store-book', [
+        'image' => $file,
+        'name' => 'Test Book',
+        'description' => 'Test Description',
+        'price' => 10.50,
+        'author' => 'Test Author',
+        'category_id' => 1,
+    ], [
+        '_token' => csrf_token(),
+    ]);
 
-        $response->assertRedirect('/books')
-            ->assertSessionHas('success', 'Book added successfully..!');
-    }
+    $response->assertStatus(302);
+
+    $time=time();
+    $this->assertDatabaseHas('books', [
+        'image' => '/images/'.$time.'.jpg',
+        'name' => 'Test Book',
+        'description' => 'Test Description',
+        'price' => 10.50,
+        'author' => 'Test Author',
+        'category_id' => 1,
+    ]);
+
+    // Storage::disk('public')->assertExists('images/'.$time.'.jpg');
+
+    $response->assertRedirect('/books')
+        ->assertSessionHas('success', 'Book added successfully..!');
+}
 
     public function test_can_edit_book()
     {
@@ -88,6 +99,7 @@ class BookCrudTest extends TestCase
         $book = Book::factory()->create();
 
         $data = [
+            'image'=>'images/book1.jpg',
             'name' => 'Updated Book Name',
             'description' => 'Updated Book Description',
             'price' => 20.00,
@@ -101,6 +113,7 @@ class BookCrudTest extends TestCase
 
         $updatedBook = Book::find($book->id);
 
+        $this->assertEquals($data['image'], $updatedBook->image);
         $this->assertEquals($data['name'], $updatedBook->name);
         $this->assertEquals($data['description'], $updatedBook->description);
         $this->assertEquals($data['price'], $updatedBook->price);

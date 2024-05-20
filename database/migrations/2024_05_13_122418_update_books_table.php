@@ -11,6 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('books', function (Blueprint $table) {
+            $table->string('image')->default('images/book1.jpg');
             // $table->string('name', 255)->change();
             // $table->index(['name', 'description'], 'fulltext_index');
         });

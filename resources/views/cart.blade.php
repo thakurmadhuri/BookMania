@@ -35,7 +35,7 @@
                     <div class="card mb-3">
                         <div class="row g-0">
                             <div class="col-md-4">
-                                <img src="{{ asset('images/book1.jpg') }}" class="img-fluid rounded-start" alt="...">
+                                <img src="{{ asset($book->image) }}" class="img-fluid rounded-start" alt="...">
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body">
@@ -129,6 +129,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
+                    window.location.reload();
                     console.log('Item removed successfully');
                 },
                 error: function(xhr, status, error) {

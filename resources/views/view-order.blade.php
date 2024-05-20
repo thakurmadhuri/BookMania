@@ -90,7 +90,7 @@
                                 
                                 <td>{{$i}}</td>
                                 <td>
-                                <img src="{{ asset('images/book1.jpg') }}" class="card-img-top" alt="{{ $book->book['name']}}"  style=" height: 50px; width: 70px;">
+                                <img src="{{ asset($book->image) }}" class="card-img-top" alt="{{ $book->book['name']}}"  style=" height: 50px; width: 70px;">
                                 </td>
                                 <td>{{ $book->book['name']}}</td>
                                 <td>{{ $book->book['author']}}</td>

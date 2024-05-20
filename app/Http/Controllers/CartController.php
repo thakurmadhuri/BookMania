@@ -53,9 +53,11 @@ class CartController extends Controller
             $count = CartDetail::where('cart_id', $data['cart_id'])->count();
             if ($count == 0) {
                 Cart::where('id', $data['cart_id'])->delete();
+                Session::forget('cart'.$user->id);
             }
-            $cart = Session::get('cart.' . $user->id, []);
+            $cart = Session::get('cart.' . $user->id,[]);
             unset($cart[$data['book_id']]);
+            Session::put('cart.' . $user->id, $cart);
             return response()->json(200);
         } else {
             return response()->json(500);

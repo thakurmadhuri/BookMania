@@ -17,6 +17,7 @@
                     @php
                     $user=Auth::user();
                     $cart = Session::get('cart.'. $user->id, []);
+                    //dd($cart);
                     @endphp
 
                     <form action="{{ route('all-books') }}" method="GET" >
@@ -34,7 +35,7 @@
 
                         <div class="col">
                             <div class="card h-100">
-                                <img src="{{ asset('images/book1.jpg') }}" class="card-img-top" alt="{{$book->name}}">
+                                <img src="{{ asset($book->image) }}" class="card-img-top" alt="{{$book->name}}">
                                 <div class="card-body">
                                     <h5 class="card-title fw-bold">{{$book->name}}</h5>
                                     <p class="fs-5 ">By {{$book->author}}</p>
