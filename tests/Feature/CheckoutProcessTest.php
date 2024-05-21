@@ -50,7 +50,7 @@ class CheckoutProcessTest extends TestCase
         CartDetail::factory()->create(['cart_id' => $cart->id]);
 
         $response = $this->actingAs($this->user)
-                         ->get(route('checkout'));
+            ->get(route('checkout'));
 
         $response->assertStatus(200);
 
@@ -63,7 +63,7 @@ class CheckoutProcessTest extends TestCase
         });
 
         $response->assertViewHas('states', function ($viewStates) {
-            return count($viewStates) === 36; 
+            return count($viewStates) === 36;
         });
     }
 
@@ -97,7 +97,8 @@ class CheckoutProcessTest extends TestCase
         ]);
     }
 
-    public function test_place_order(){
+    public function test_place_order()
+    {
         $cart = Cart::factory()->create(['user_id' => $this->user->id]);
         $cartDetails = CartDetail::factory()->count(2)->create(['cart_id' => $cart->id]);
 
@@ -113,17 +114,21 @@ class CheckoutProcessTest extends TestCase
         ]);
 
         foreach ($cartDetails as $cartDetail) {
-            // $this->assertDatabaseHas('order_books', [
-            //     'order_id' => Order::latest()->first()->id,
-            //     'book_id' => $cartDetail->books_id,
-            // ]);
+            $this->assertDatabaseHas('order_books', [
+                'order_id' => Order::latest()->first()->id,
+                'book_id' => $cartDetail->book_id,
+            ]);
         }
+
+        $this->assertNull(Session::get('cart' . $this->user->id));
 
         // $this->assertDatabaseMissing('carts', [
         //     'user_id' => $this->user->id,
         // ]);
 
-        $this->assertNull(Session::get('cart'));
+        // $this->assertDatabaseMissing('cart_details', [
+        //     'cart_id' => $cart->id,
+        // ]);
     }
 
 }

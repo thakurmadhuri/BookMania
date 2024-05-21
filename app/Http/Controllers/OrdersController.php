@@ -8,6 +8,8 @@ use App\Models\OrderBook;
 use App\Models\UserAddress;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
 
@@ -25,64 +27,69 @@ class OrdersController extends Controller
     {
         $user = auth()->user();
 
-        $cart = Cart::with([
-            'cartDetails' => function ($query) {
-                $query->join('books', 'cart_details.book_id', '=', 'books.id');
-            },
-        ])->where("user_id", $user->id)->first();
+        DB::beginTransaction();
+        try {
+            $cart = Cart::with([
+                'cartDetails' => function ($query) {
+                    $query->join('books', 'cart_details.book_id', '=', 'books.id');
+                },
+            ])->where("user_id", $user->id)->first();
 
-        $address = UserAddress::where("user_id", $user->id)->first();
+            $address = UserAddress::where("user_id", $user->id)->first();
 
-        $latestOrder = Order::orderBy('created_at', 'DESC')->first();
-        if ($latestOrder) {
-            $id = '#ORD' . str_pad($latestOrder->id + 1, 8, "0", STR_PAD_LEFT);
-        } else {
-            $id = '#ORD' . str_pad(1, 8, "0", STR_PAD_LEFT);
-        }
+            $latestOrder = Order::orderBy('created_at', 'DESC')->first();
+            if ($latestOrder) {
+                $id = '#ORD' . str_pad($latestOrder->id + 1, 8, "0", STR_PAD_LEFT);
+            } else {
+                $id = '#ORD' . str_pad(1, 8, "0", STR_PAD_LEFT);
+            }
 
-        $order = Order::create([
-            'order_id' => $id,
-            'total_qty' => $cart->total_qty,
-            'total_price' => $cart->total_price,
-            'payment_method' => 'CASH',
-            'user_id' => $user->id,
-            'first_name' => $address->first_name,
-            'last_name' => $address->last_name,
-            'address' => $address->address,
-            'pincode' => $address->pincode,
-            'mobile' => $address->mobile,
-            'city' => $address->city,
-            'state' => $address->state,
-            'country' => $address->country,
-        ]);
-
-        $total = 0;
-        foreach ($cart->cartDetails as $cartdetail) {
-            $sub_total = $cartdetail->qty * $cartdetail->price;
-            $total = $total + $sub_total;
-
-            OrderBook::create([
-                'order_id' => $order->id,
-                'book_id' => $cartdetail->book_id,
-                'qty' => $cartdetail->qty,
-                'total_book_price' => $sub_total,
+            $order = Order::create([
+                'order_id' => $id,
+                'total_qty' => $cart->total_qty,
+                'total_price' => $cart->total_price,
+                'payment_method' => 'CASH',
+                'user_id' => $user->id,
+                'first_name' => $address->first_name,
+                'last_name' => $address->last_name,
+                'address' => $address->address,
+                'pincode' => $address->pincode,
+                'mobile' => $address->mobile,
+                'city' => $address->city,
+                'state' => $address->state,
+                'country' => $address->country,
             ]);
 
-            $cartSession = Session::get('cart.' . $user->id,[]);
-            unset($cartSession[$cartdetail->book_id]);
-            Session::put('cart.' . $user->id, $cartSession);
-        }
+            $total = 0;
+            foreach ($cart->cartDetails as $cartdetail) {
+                $sub_total = $cartdetail->qty * $cartdetail->price;
+                $total = $total + $sub_total;
 
-        $order->total_price = $total;
-        $order->save();
-        
-        $cart->delete();
+                OrderBook::create([
+                    'order_id' => $order->id,
+                    'book_id' => $cartdetail->book_id,
+                    'qty' => $cartdetail->qty,
+                    'total_book_price' => $sub_total,
+                ]);
 
-        Session::forget('cart'.$user->id);
+                $cartSession = Session::get('cart.' . $user->id, []);
+                unset($cartSession[$cartdetail->book_id]);
+                Session::put('cart.' . $user->id, $cartSession);
+            }
 
-        if ($order) {
+            $order->total_price = $total;
+            $order->save();
+
+            $cart->delete();
+
+            Session::forget('cart' . $user->id);
+
+            DB::commit();
+
             return response()->json(['message' => "Order placed successfully..!"], 200);
-        } else {
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Order placement failed: " . $e->getMessage());
             return response()->json(["message" => "Error while placing order"], 500);
         }
     }
