@@ -68,101 +68,108 @@ class CartController extends Controller
 
     public function store(Request $request)
     {
-        $validated = Validator::make($request->all(), [
-            'book_id' => 'required',
-            'quantity' => 'required',
-            'total' => 'required',
-        ]);
+        DB::beginTransaction();
+        try {
+            $validated = Validator::make($request->all(), [
+                'book_id' => 'required',
+                'quantity' => 'required',
+                'total' => 'required',
+            ]);
 
-        if ($validated->fails()) {
-            return redirect()->back()->withErrors($validated)->withInput();
-        }
+            if ($validated->fails()) {
+                return redirect()->back()->withErrors($validated)->withInput();
+            }
 
-        $data = $request->all();
+            $data = $request->all();
 
-        $book = Book::where('id', $data['book_id'])->first();
-        if (!isset($book)) {
-            return response()->json(['message' => "Book not found"], 404);
-        }
+            $book = Book::where('id', $data['book_id'])->first();
+            if (!isset($book)) {
+                return response()->json(['message' => "Book not found"], 404);
+            }
 
-        $user = Auth::user();
+            $user = Auth::user();
 
-        $productId = $data['book_id'];
-        $quantity = $data['quantity'];
+            $productId = $data['book_id'];
+            $quantity = $data['quantity'];
 
-        $c = Cart::where('user_id', $user->id)->first();
-        if ($c !== null) {
-            $de = CartDetail::where('cart_id', $c->id)->where('book_id', $data['book_id'])->first();
-            if (isset($de)) {
+            $c = Cart::where('user_id', $user->id)->first();
+            if ($c !== null) {
+                $de = CartDetail::where('cart_id', $c->id)->where('book_id', $data['book_id'])->first();
+                if (isset($de)) {
 
-                $c->total_price = $c->total_price - $de->total_book_price + floatval($data['total']);
+                    $c->total_price = $c->total_price - $de->total_book_price + floatval($data['total']);
 
-                if ($data['quantity'] == 0) {
-                    $de->delete();
+                    if ($data['quantity'] == 0) {
+                        $de->delete();
+                    } else {
+                        $de->qty = $data['quantity'];
+                        $de->total_book_price = floatval($data['total']);
+                        $de->save();
+                    }
+
                 } else {
-                    $de->qty = $data['quantity'];
-                    $de->total_book_price = floatval($data['total']);
-                    $de->save();
+                    $de = CartDetail::create([
+                        "cart_id" => $c->id,
+                        "book_id" => $data['book_id'],
+                        "qty" => $data['quantity'],
+                        "total_book_price" => $data['total'],
+                    ]);
+
+                    $c->total_price = $c->total_price + $data['total'];
+                }
+
+                $count = CartDetail::where('cart_id', $c->id)->count();
+                if ($count == 0) {
+                    $c->delete();
+                } else {
+                    $c->total_qty = $count;
+                    $c->save();
                 }
 
             } else {
-                $de = CartDetail::create([
-                    "cart_id" => $c->id,
+                $cart = Cart::create([
+                    'user_id' => $user->id,
+                    'total_qty' => '1',
+                    'total_price' => $data['total'],
+                ]);
+
+                $details = CartDetail::create([
+                    "cart_id" => $cart->id,
                     "book_id" => $data['book_id'],
                     "qty" => $data['quantity'],
                     "total_book_price" => $data['total'],
                 ]);
 
-                $c->total_price = $c->total_price + $data['total'];
-
+                $count = CartDetail::where('cart_id', $cart->id)->count();
+                if ($count == 0) {
+                    $cart->delete();
+                } else {
+                    $cart->total_qty = $count;
+                    $cart->save();
+                }
             }
 
-            $count = CartDetail::where('cart_id', $c->id)->count();
-            if ($count == 0) {
-                $c->delete();
+            $cart = Session::get('cart.' . $user->id, []);
+
+            if ($quantity <= 0) {
+                unset($cart[$productId]);
             } else {
-                $c->total_qty = $count;
-                $c->save();
+                if (isset($cart[$productId])) {
+                    $cart[$productId] = $quantity;
+                } else {
+                    $cart[$productId] = $quantity;
+                }
             }
 
-        } else {
-            $cart = Cart::create([
-                'user_id' => $user->id,
-                'total_qty' => '1',
-                'total_price' => $data['total'],
-            ]);
+            Session::put('cart.' . $user->id, $cart);
+            DB::commit();
+            return response()->json(['message' => "Item added in cart"], 200);
 
-            $details = CartDetail::create([
-                "cart_id" => $cart->id,
-                "book_id" => $data['book_id'],
-                "qty" => $data['quantity'],
-                "total_book_price" => $data['total'],
-            ]);
-
-            $count = CartDetail::where('cart_id', $cart->id)->count();
-            if ($count == 0) {
-                $cart->delete();
-            } else {
-                $cart->total_qty = $count;
-                $cart->save();
-            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Failed to add item in cart: " . $e->getMessage());
+            return response()->json(["message" => "Error while adding item in cart"], 500);
         }
-
-        $cart = Session::get('cart.' . $user->id, []);
-
-        if ($quantity <= 0) {
-            unset($cart[$productId]);
-        } else {
-            if (isset($cart[$productId])) {
-                $cart[$productId] = $quantity;
-            } else {
-                $cart[$productId] = $quantity;
-            }
-        }
-
-        Session::put('cart.' . $user->id, $cart);
-
-        return response()->json(['message' => "Item added in cart"], 200);
     }
 
     public function cartCount()
@@ -231,40 +238,46 @@ class CartController extends Controller
 
     public function addAddress(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'firstname' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'mobile' => 'required|string|regex:/^[0-9]{10}$/',
-            'address' => 'required|string',
-            'pincode' => 'required|string|size:6',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'country' => 'required|string|max:255',
-        ]);
+        DB::beginTransaction();
+        try {
+            $validator = Validator::make($request->all(), [
+                'firstname' => 'required|string|max:255',
+                'lastname' => 'required|string|max:255',
+                'mobile' => 'required|string|regex:/^[0-9]{10}$/',
+                'address' => 'required|string',
+                'pincode' => 'required|string|size:6',
+                'city' => 'required|string|max:255',
+                'state' => 'required|string|max:255',
+                'country' => 'required|string|max:255',
+            ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
 
-        $user = auth()->user();
+            $user = auth()->user();
 
-        $address = UserAddress::create([
-            'user_id' => $user->id,
-            'first_name' => $request->input('firstname'),
-            'last_name' => $request->input('lastname'),
-            'mobile' => $request->input('mobile'),
-            'address' => $request->input('address'),
-            'pincode' => $request->input('pincode'),
-            'city' => $request->input('city'),
-            'state' => $request->input('state'),
-            'country' => $request->input('country'),
-            "default_address" => false,
-        ]);
+            $address = UserAddress::create([
+                'user_id' => $user->id,
+                'first_name' => $request->input('firstname'),
+                'last_name' => $request->input('lastname'),
+                'mobile' => $request->input('mobile'),
+                'address' => $request->input('address'),
+                'pincode' => $request->input('pincode'),
+                'city' => $request->input('city'),
+                'state' => $request->input('state'),
+                'country' => $request->input('country'),
+                "default_address" => false,
+            ]);
 
-        if ($address) {
+
+            DB::commit();
             return response()->json(['message' => 'Address inserted successfully'], 200);
-        } else {
-            return response()->json(['message' => 'Unable to insert address'], 500);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Failed to add address: " . $e->getMessage());
+            return response()->json(["message" => "Error while adding address"], 500);
         }
 
     }

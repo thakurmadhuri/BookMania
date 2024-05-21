@@ -47,8 +47,8 @@ class CheckoutProcessTest extends TestCase
 
         $cart = Cart::factory()->create(['user_id' => $this->user->id]);
 
-        CartDetail::factory()->create(['cart_id' => $cart->id]);
-
+        $cartDetail=CartDetail::factory()->create(['cart_id' => $cart->id]);
+        
         $response = $this->actingAs($this->user)
             ->get(route('checkout'));
 
