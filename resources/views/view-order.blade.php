@@ -83,24 +83,21 @@
                                 $i=1;
                                 @endphp
                                 @foreach($order->books as $book)
+                                <tr>
+                                    <td>{{$i}}</td>
+                                    <td>
+                                        <img src="{{ asset($book->book['image']) }}" style=" height: 50px; width: 70px;"
+                                            class="card-img-top" alt="{{ $book->book['name']}}">
+                                    </td>
+                                    <td>{{ $book->book['name']}}</td>
+                                    <td>{{ $book->book['author']}}</td>
+                                    <td>{{ $book->qty}}</td>
+                                    <td>{{ $book->total_book_price}}</td>
+                                </tr>
                                 @php
-                                    //dd($book->book);
+                                $i++;
                                 @endphp
-                            <tr>
-                                
-                                <td>{{$i}}</td>
-                                <td>
-                                <img src="{{ asset($book->image) }}" class="card-img-top" alt="{{ $book->book['name']}}"  style=" height: 50px; width: 70px;">
-                                </td>
-                                <td>{{ $book->book['name']}}</td>
-                                <td>{{ $book->book['author']}}</td>
-                                <td>{{ $book->qty}}</td>
-                                <td>{{ $book->total_book_price}}</td>
-                            </tr>
-                            @php
-                            $i++;
-                            @endphp
-                            @endforeach
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

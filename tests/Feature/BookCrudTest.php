@@ -70,8 +70,6 @@ class BookCrudTest extends TestCase
         'category_id' => 1,
     ]);
 
-    // Storage::disk('public')->assertExists('images/'.$time.'.jpg');
-
     $response->assertRedirect('/books')
         ->assertSessionHas('success', 'Book added successfully..!');
 }
