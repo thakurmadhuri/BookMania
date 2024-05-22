@@ -127,9 +127,7 @@ class BookCrudTest extends TestCase
         $book = Book::factory()->create();
         $response = $this->get(route('delete-book', ['id' => $book->id]));
         $response->assertStatus(302);
-        // $this->assertDeleted($book);
-        // $this->assertDatabaseMissing('books', ['id' => $book->id]);
         $response->assertRedirect('books')
-            ->assertSessionHas('success', 'Deleted successfully..!');
+            ->assertSessionHas('success', 'Deleted successfully..!');  
     }
 }

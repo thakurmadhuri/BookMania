@@ -122,13 +122,6 @@ class CheckoutProcessTest extends TestCase
 
         $this->assertNull(Session::get('cart' . $this->user->id));
 
-        // $this->assertDatabaseMissing('carts', [
-        //     'user_id' => $this->user->id,
-        // ]);
-
-        // $this->assertDatabaseMissing('cart_details', [
-        //     'cart_id' => $cart->id,
-        // ]);
     }
 
 }
