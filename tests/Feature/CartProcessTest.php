@@ -37,6 +37,44 @@ class CartProcessTest extends TestCase
         $this->artisan('db:seed', ['--class' => RolesSeeder::class]);
     }
 
+    public function testMyCart()
+    {
+        $book = Book::factory()->create();
+
+        $cart = Cart::factory()->create(['user_id' => $this->user->id]);
+
+        $cartDetail = CartDetail::factory()->create([
+            'cart_id' => $cart->id,
+            'book_id' => $book->id,
+            'qty' => 2,
+            'total_book_price' => $book->price * 2,
+        ]);
+
+        $response = $this->json('GET', '/cart');
+
+        $response->assertStatus(200);
+    }
+
+    public function testCartCount()
+    {
+        $cart = Cart::factory()->create(['user_id' => $this->user->id]);
+
+        $cartDetails = CartDetail::factory()->count(3)->create(['cart_id' => $cart->id]);
+
+        $response = $this->json('GET', route('cart.count'));
+
+        $response->assertStatus(200)
+                 ->assertJson(['count' => 3]);
+
+        $cartDetails->each->delete();
+        $cart->delete();
+
+        $response = $this->json('GET', route('cart.count'));
+
+        $response->assertStatus(200)
+                 ->assertJson(['count' => 0]);
+    }
+
     public function test_remove_item_from_cart()
     {
         $book = Book::factory()->create();
@@ -54,10 +92,8 @@ class CartProcessTest extends TestCase
             'price' => $book->price,
         ]);
 
-        Session::put('cart.' .$this->user->id, [
-            $book->id =>  1
-            ]
-        );
+        Session::put(
+            'cart.' . $this->user->id,[$book->id => 1]);
 
         $response = $this->postJson('/remove-item', [
             'book_id' => $book->id,
@@ -66,21 +102,11 @@ class CartProcessTest extends TestCase
 
         $response->assertStatus(200);
 
-        // $this->assertDatabaseMissing('cart_details', [
-        //     'cart_id' => $cart->id,
-        //     'book_id' => $book->id,
-        // ]);
-
-        // $this->assertDatabaseMissing('carts', [
-        //     'id' => $cart->id,
-        // ]);
-
-        // $this->assertNull(Session::get('cart.' .$this->user->id));
     }
 
     public function test_can_add_item_to_cart()
     {
-        
+
         $book = Book::factory()->create([
             'price' => 20.00,
         ]);

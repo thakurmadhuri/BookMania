@@ -132,7 +132,7 @@ class BooksController extends Controller
         if (!$book) {
             return response()->json(['message' => 'Book not found'], 404);
         }
-        // $book->cartDetail()->delete();
+
         $book->delete();
 
         return redirect("books")->with("success", "Deleted successfully..!");
