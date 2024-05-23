@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Stripe\Charge;
+use Stripe\Stripe;
 use App\Models\Cart;
+use Stripe\Customer;
 use App\Models\Order;
 use App\Models\OrderBook;
 use App\Models\UserAddress;
@@ -94,14 +97,43 @@ class OrdersController extends Controller
         }
     }
 
+    public function stripeOrder(Request $request)
+    {
+        $user = auth()->user();
+
+        DB::beginTransaction();
+        try {
+            Stripe::setApiKey(env('STRIPE_SECRET'));
+
+            $amount = $request->input('amount') * 100;
+            $email = $request->input('email');
+
+            $customer = Customer::create([
+                'email' => $email,
+                'source' => $request->input('stripeToken'),
+            ]);
+
+            $charge = Charge::create([
+                'customer' => $customer->id,
+                'amount' => $amount,
+                'currency' => 'usd',
+            ]);
+
+            DB::commit();
+            return response()->json(['message' => "Order placed successfully..!"], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Order placement failed: " . $e->getMessage());
+            return response()->json(["message" => "Error while placing order"], 500);
+        }
+    }
+
     public function getLastOrder()
     {
         $user = auth()->user();
-        $order = Order::with([
-            'books' => function ($query) {
-                $query->join('books', 'order_books.book_id', '=', 'books.id');
-            }
-        ])->where("user_id", $user->id)->latest()->first();
+        $order = Order::with(
+            'books'
+        )->where("user_id", $user->id)->latest()->first();
 
         return $order;
     }
@@ -115,11 +147,7 @@ class OrdersController extends Controller
     public function getMyOrders()
     {
         $user = auth()->user();
-        $orders = Order::with([
-            'books' => function ($query) {
-                $query->join('books', 'order_books.book_id', '=', 'books.id');
-            }
-        ])->where("user_id", $user->id)->orderBy('created_at', 'desc')->get();
+        $orders = Order::with('books')->where("user_id", $user->id)->orderBy('created_at', 'desc')->get();
 
         return $orders;
     }

@@ -202,8 +202,8 @@
                                     <div class="card mb-3">
                                         <div class="row g-0">
                                             <div class="col-md-4">
-                                                <img src="{{ asset($book->image) }}"
-                                                    class="img-fluid rounded-start" alt="...">
+                                                <img src="{{ asset($book->image) }}" class="img-fluid rounded-start"
+                                                    alt="...">
                                             </div>
                                             <div class="col-md-8">
                                                 <div class="card-body">
@@ -259,32 +259,74 @@
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="paymentmode" id="online"
-                                                value="online" disabled>
+                                                value="online">
                                             <label class="form-check-label" for="online">
                                                 Stripe
                                             </label>
                                         </div>
                                     </div>
+                                    <div class="stripe">
+                                        <form action="{{route('stripe-order')}}" method="POST" id="payment-form">
+                                            {{ csrf_field() }}
+                                            <div class="row mb-3">
+                                                <label for="amount"
+                                                    class="col-md-4 col-form-label text-md-end">{{ __('Amount') }}</label>
 
-                                    <div class="d-flex justify-content-center">
-                                        <br><button class="btn btn-success mb-2 place"> Place
-                                            Order</button>
+                                                <div class="col-md-6">
+                                                    <input type="text" name="amount" value="{{$totalAmount}}"
+                                                        id="amount" class="form-control" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <label for="email"
+                                                    class="col-md-4 col-form-label text-md-end">{{ __('Email') }}</label>
+
+                                                <div class="col-md-6">
+                                                    <input type="text" name="email" id="email" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="">
+                                                <label for="card-element">
+                                                    Credit or debit card
+                                                </label>
+                                                <div id="card-element ">
+                                                </div>
+                                                <div id="card-errors" role="alert"></div>
+                                            </div>
+                                        </form>
                                     </div>
+                                </div>
 
+                                <div class="d-flex justify-content-center ">
+                                    <br><button class="btn btn-success mb-2 place"> Place
+                                        Order</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
+
             </div>
         </div>
     </div>
 </div>
+</div>
+<script src="https://js.stripe.com/v3/"></script>
 
 <script>
 $(document).ready(function() {
-    // disableAccordian();
+
+    $(".stripe").hide();
+
+    $("#online").click(function() {
+        $(".stripe").show();
+        // $(".place").hide();
+    });
+
+    $("#cash").click(function() {
+        $(".stripe").hide();
+        // $(".place").show();
+    });
 
     function disableAccordian() {
         $('#headingTwo .accordion-button').attr('data-bs-toggle', '');
@@ -315,7 +357,7 @@ $(document).ready(function() {
 
     $(".place").click(function() {
         $.ajax({
-            url: '/place-order', // Replace with the actual URL for saving the cart
+            url: '/place-order', 
             type: 'POST',
             data: {
 
@@ -382,4 +424,69 @@ $(document).ready(function() {
     });
 });
 </script>
+
+<!-- <script>
+const stripe = Stripe(
+    'pk_test_51PJXwlSBxW9JUnnDOk0T6AujlQGLn3MhDHz6CnWXjqrD7w2cHIYRKCDyTlep04D6EHFjq3WJBQBSk4UGSbLvsuNJ006KvS8ZiA');
+
+const elements = stripe.elements();
+
+const style = {
+    base: {
+        color: '#32325d',
+        fontFamily: 'Arial, sans-serif',
+        fontSmoothing: 'antialiased',
+        fontSize: '16px',
+        '::placeholder': {
+            color: '#aab7c4'
+        }
+    },
+    invalid: {
+        color: '#fa755a',
+        iconColor: '#fa755a'
+    }
+};
+
+const card = elements.create('card', {
+    style: style
+});
+
+card.mount('#card-element');
+
+card.on('change', event => {
+    const displayError = document.getElementById('card-errors');
+    if (event.error) {
+        displayError.textContent = event.error.message;
+    } else {
+        displayError.textContent = '';
+    }
+});
+
+const form = document.getElementById('submit');
+form.addEventListener('click', async event => {
+    event.preventDefault();
+
+    const {
+        token,
+        error
+    } = await stripe.createToken(card);
+
+    if (error) {
+        const errorElement = document.getElementById('card-errors');
+        errorElement.textContent = error.message;
+    } else {
+        stripeTokenHandler(token);
+    }
+});
+
+function stripeTokenHandler(token) {
+    const hiddenInput = document.createElement('input');
+    hiddenInput.setAttribute('type', 'hidden');
+    hiddenInput.setAttribute('name', 'stripeToken');
+    hiddenInput.setAttribute('value', token.id);
+    document.body.appendChild(hiddenInput);
+
+    document.body.submit();
+}
+</script> -->
 @endsection

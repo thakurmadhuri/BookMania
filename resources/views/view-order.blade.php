@@ -83,17 +83,19 @@
                                 $i=1;
                                 @endphp
                                 @foreach($order->books as $book)
+                                @if(isset($book->book))
                                 <tr>
                                     <td>{{$i}}</td>
                                     <td>
-                                        <img src="{{ asset($book->book['image']) }}" style=" height: 50px; width: 70px;"
-                                            class="card-img-top" alt="{{ $book->book['name']}}">
+                                        <img src="{{ asset($book->book->image) }}" style=" height: 50px; width: 70px;"
+                                            class="card-img-top" alt="{{ $book->book->name}}">
                                     </td>
-                                    <td>{{ $book->book['name']}}</td>
-                                    <td>{{ $book->book['author']}}</td>
+                                    <td>{{ $book->book->name}}</td>
+                                    <td>{{ $book->book->author}}</td>
                                     <td>{{ $book->qty}}</td>
                                     <td>{{ $book->total_book_price}}</td>
                                 </tr>
+                                @endif
                                 @php
                                 $i++;
                                 @endphp

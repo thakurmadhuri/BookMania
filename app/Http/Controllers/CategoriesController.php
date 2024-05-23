@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\CategoriesResource;
@@ -35,23 +36,29 @@ class CategoriesController extends Controller
 
     public function store(Request $request)
     {
-        $validated = Validator::make($request->all(), [
-            'name' => 'required|max:255',
-        ]);
+        DB::beginTransaction();
+        try {
+            $validated = Validator::make($request->all(), [
+                'name' => 'required|max:255',
+            ]);
 
-        if ($validated->fails()) {
-            return redirect()->back()->withErrors($validated)->withInput();
+            if ($validated->fails()) {
+                return redirect()->back()->withErrors($validated)->withInput();
+            }
+
+            $cat = Category::create([
+                'name' => $request->name,
+            ]);
+            DB::commit();
+            return redirect("categories")->with("success", "Category created successfully..!");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        $cat = Category::create([
-            'name' => $request->name,
-        ]);
-        return redirect("categories")->with("success", "Category created successfully..!");
     }
 
     public function edit($id)
     {
-
         $category = $this->getOne($id);
         if (!$category) {
             return response()->json(['message' => 'Book not found'], 404);
@@ -62,26 +69,39 @@ class CategoriesController extends Controller
 
     public function update(Request $request, $id)
     {
+        DB::beginTransaction();
+        try {
+            $cat = $this->getOne($id);
+            if (!$cat) {
+                return response()->json(['message' => 'Book not found'], 404);
+            }
 
-        $cat = $this->getOne($id);
-        if (!$cat) {
-            return response()->json(['message' => 'Book not found'], 404);
+            $cat->name = $request->name;
+            $cat->save();
+            DB::commit();
+            return redirect("categories")->with("success", "Updated successfully..!");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        $cat->name = $request->name;
-        $cat->save();
-        return redirect("categories")->with("success", "Updated successfully..!");
     }
 
     public function delete($id)
     {
-        $cat = $this->getOne($id);
-        if (!$cat) {
-            return response()->json(['message' => 'Book not found'], 404);
-        }
+        DB::beginTransaction();
+        try {
+            $cat = $this->getOne($id);
+            if (!$cat) {
+                return response()->json(['message' => 'Book not found'], 404);
+            }
 
-        $cat->delete();
-        return redirect("categories")->with("success", "Deleted successfully..!");
+            $cat->delete();
+            DB::commit();
+            return redirect("categories")->with("success", "Deleted successfully..!");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
 }
