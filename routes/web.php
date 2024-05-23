@@ -62,6 +62,7 @@ Route::group(['middleware' => ['auth:web']], function () {
         Route::get('checkout', [CartController::class, 'checkout'])->name('checkout');
         Route::post('add-address', [CartController::class, 'addAddress'])->name('add-address');
         Route::post('place-order', [OrdersController::class, 'placeOrder'])->name('place-order');
+        Route::post('stripe-order', [OrdersController::class, 'stripeOrder'])->name('stripe-order');
         Route::get('complete-order', [OrdersController::class, 'completeOrder'])->name('complete-order');
         Route::get('cart/count', [CartController::class, 'cartCount'])->name('cart.count');
         Route::get('my-orders', [OrdersController::class, 'myOrders'])->name('my-orders');

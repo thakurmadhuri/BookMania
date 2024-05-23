@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Category;
+use App\Models\OrderBook;
 use App\Models\CartDetail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -15,7 +16,7 @@ class Book extends Model
 {
     use HasFactory, SoftDeletes,CascadeSoftDeletes;
 
-    protected $cascadeDeletes = ['cartDetail'];
+    protected $cascadeDeletes = ['cartDetail','orderBook'];
     protected $fillable = [
         'name',
         'description',
@@ -33,5 +34,10 @@ class Book extends Model
     public function cartDetail():HasMany
     {
         return $this->hasMany(CartDetail::class,'book_id','id');
+    }
+
+    public function orderBook():HasMany
+    {
+        return $this->hasMany(OrderBook::class,'book_id','id');
     }
 }

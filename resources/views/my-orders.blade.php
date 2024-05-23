@@ -28,17 +28,21 @@
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item">
                                     @foreach($order->books as $book)
+                                    @php
+                                        //dd($book->book['image']);
+                                    @endphp
+                                    @if(isset($book->book))
                                     <div class="card mb-3">
                                         <div class="row g-0">
                                             <div class="col-md-4">
-                                                <img src="{{ asset($book->image) }}"
+                                                <img src="{{ asset($book->book['image']) }}"
                                                     class="img-fluid rounded-start" alt="...">
                                             </div>
                                             <div class="col-md-8">
                                                 <div class="card-body">
-                                                    <h5 class="card-title">{{$book->name}}</h5>
-                                                    <p class="card-text">By {{$book->author}}</p>
-                                                    <p class="card-text">{{$book->description}}</p>
+                                                    <h5 class="card-title">{{$book->book['name']}}</h5>
+                                                    <p class="card-text">By {{$book->book['author']}}</p>
+                                                    <p class="card-text">{{$book->book['description']}}</p>
                                                     <div class="d-flex justify-content-between">
                                                         <p class="card-text">
                                                             <small class="text-muted">Quantity =
@@ -53,6 +57,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @endif
                                     @endforeach
                                 </li>
                             </ul>

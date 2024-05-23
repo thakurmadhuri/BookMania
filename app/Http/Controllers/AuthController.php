@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -26,41 +27,11 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-                'confirmed',
-                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_@#$%^&*!])[A-Za-z\d@_]{8,}$/'
-            ],
-        ], [
-            'password' => 'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character and be at least 8 characters long.',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $user->assignRole('user');
-
-        $token = $user->createToken('BookMania')->accessToken;
-        return response()->json(['user' => $user, 'token' => $token], 201);
-    }
-
-    public function changePassword(Request $request)
-    {
-        $validator = Validator::make(
-            $request->all(),
-            [
+        DB::beginTransaction();
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'password' => [
                     'required',
                     'string',
@@ -68,24 +39,68 @@ class AuthController extends Controller
                     'confirmed',
                     'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_@#$%^&*!])[A-Za-z\d@_]{8,}$/'
                 ],
-            ]
-            ,
-            [
+            ], [
                 'password' => 'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character and be at least 8 characters long.',
-            ]
-        );
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
 
-        $user = Auth::user();
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+
+            $user->assignRole('user');
+
+            $token = $user->createToken('BookMania')->accessToken;
+            DB::commit();
+            return response()->json(['user' => $user, 'token' => $token], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        $user->password = Hash::make($request->password);
-        $user->save();
-        return response()->json(['message' => 'Password changes successfully..!'], 200);
+    }
+
+    public function changePassword(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'password' => [
+                        'required',
+                        'string',
+                        'min:8',
+                        'confirmed',
+                        'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_@#$%^&*!])[A-Za-z\d@_]{8,}$/'
+                    ],
+                ]
+                ,
+                [
+                    'password' => 'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character and be at least 8 characters long.',
+                ]
+            );
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+            $user->password = Hash::make($request->password);
+            $user->save();
+            DB::commit();
+            return response()->json(['message' => 'Password changes successfully..!'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function logout(Request $request)
