@@ -39,6 +39,9 @@ class OrdersController extends Controller
             ])->where("user_id", $user->id)->first();
 
             $address = UserAddress::where("user_id", $user->id)->first();
+            if(! $address) {
+                return response()->json(['message' => "address not found"], 404);
+            }
 
             $latestOrder = Order::orderBy('created_at', 'DESC')->first();
             if ($latestOrder) {
@@ -88,12 +91,11 @@ class OrdersController extends Controller
             Session::forget('cart' . $user->id);
 
             DB::commit();
-
             return response()->json(['message' => "Order placed successfully..!"], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Order placement failed: " . $e->getMessage());
-            return response()->json(["message" => "Error while placing order"], 500);
+            return response()->json(["message" => "Error while placing order","error"=>$e->getMessage()], 500);
         }
     }
 
