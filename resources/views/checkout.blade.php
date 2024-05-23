@@ -9,9 +9,9 @@
 
                 <div class="card-body">
                     @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
+                    <div class="alert alert-success" role="alert">
+                        {{ session('status') }}
+                    </div>
                     @endif
 
                     <div class="accordion" id="accordionExample">
@@ -39,9 +39,9 @@
                                                     autocomplete="firstname" autofocus>
 
                                                 @error('firstname')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
                                                 @enderror
                                             </div>
                                             <div class="col-md-3">
@@ -51,9 +51,9 @@
                                                     autocomplete="lastname" autofocus>
 
                                                 @error('lastname')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
                                                 @enderror
                                             </div>
 
@@ -70,9 +70,9 @@
                                                     autocomplete="mobile" autofocus>
 
                                                 @error('mobile')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
                                                 @enderror
                                             </div>
                                         </div>
@@ -88,9 +88,9 @@
                                                     autocomplete="address" autofocus></textarea>
 
                                                 @error('address')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
                                                 @enderror
                                             </div>
                                         </div>
@@ -107,9 +107,9 @@
                                                     autocomplete="pincode" autofocus>
 
                                                 @error('pincode')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
                                                 @enderror
                                             </div>
                                         </div>
@@ -124,9 +124,9 @@
                                                     value="{{ old('city') }}" required autocomplete="city" autofocus>
 
                                                 @error('city')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
                                                 @enderror
                                             </div>
                                         </div>
@@ -139,14 +139,14 @@
                                                 <select id="state" name="state" class="form-select" required autofocus>
                                                     <option value="">Select State</option>
                                                     @foreach($states as $code => $name)
-                                                        <option value="{{ $name }}">{{ $name }}</option>
+                                                    <option value="{{ $name }}">{{ $name }}</option>
                                                     @endforeach
                                                 </select>
 
                                                 @error('state')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
                                                 @enderror
                                             </div>
                                         </div>
@@ -162,9 +162,9 @@
                                                     autocomplete="country" autofocus>
 
                                                 @error('country')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
                                                 @enderror
                                             </div>
                                         </div>
@@ -189,43 +189,43 @@
                                 data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
                                     @php
-                                        $totalAmount = 0;
+                                    $totalAmount = 0;
                                     @endphp
 
                                     @foreach($cart as $item)
-                                                                    @foreach($item['cartDetails'] as $book)
-                                                                                                    @php
-                                                                                                        $subtotal = $book->price * $book->qty;
-                                                                                                        $totalAmount += $subtotal;
-                                                                                                    @endphp
+                                    @foreach($item['cartDetails'] as $book)
+                                    @php
+                                    $subtotal = $book->price * $book->qty;
+                                    $totalAmount += $subtotal;
+                                    @endphp
 
-                                                                                                    <div class="card mb-3">
-                                                                                                        <div class="row g-0">
-                                                                                                            <div class="col-md-4">
-                                                                                                                <img src="{{ asset($book->image) }}" class="img-fluid rounded-start"
-                                                                                                                    alt="...">
-                                                                                                            </div>
-                                                                                                            <div class="col-md-8">
-                                                                                                                <div class="card-body">
-                                                                                                                    <h5 class="card-title">{{$book->name}}</h5>
-                                                                                                                    <p class="card-text">By {{$book->author}}</p>
-                                                                                                                    <p class="card-text">{{$book->description}}</p>
-                                                                                                                    <div class="d-flex justify-content-between">
-                                                                                                                        <p class="card-text">
-                                                                                                                            <small class="text-muted">Quantity =
-                                                                                                                                {{$book->qty}}</small>
-                                                                                                                        </p>
-                                                                                                                        <p class="card-text">
-                                                                                                                            <small class="text-muted">Total Amount =
-                                                                                                                                ₹ {{number_format($subtotal, 2, '.', '')}}</small>
-                                                                                                                        </p>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    </div>
+                                    <div class="card mb-3">
+                                        <div class="row g-0">
+                                            <div class="col-md-4">
+                                                <img src="{{ asset($book->image) }}" class="img-fluid rounded-start"
+                                                    alt="...">
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">{{$book->name}}</h5>
+                                                    <p class="card-text">By {{$book->author}}</p>
+                                                    <p class="card-text">{{$book->description}}</p>
+                                                    <div class="d-flex justify-content-between">
+                                                        <p class="card-text">
+                                                            <small class="text-muted">Quantity =
+                                                                {{$book->qty}}</small>
+                                                        </p>
+                                                        <p class="card-text">
+                                                            <small class="text-muted">Total Amount =
+                                                                ₹ {{number_format($subtotal, 2, '.', '')}}</small>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                                                    @endforeach
+                                    @endforeach
                                     @endforeach
 
                                     <div class="d-flex justify-content-center">
@@ -314,123 +314,123 @@
 <script src="https://js.stripe.com/v3/"></script>
 
 <script>
-    $(document).ready(function () {
+$(document).ready(function() {
 
+    $(".stripe").hide();
+
+    $("#online").click(function() {
+        $(".stripe").show();
+        // $(".place").hide();
+    });
+
+    $("#cash").click(function() {
         $(".stripe").hide();
+        // $(".place").show();
+    });
 
-        $("#online").click(function () {
-            $(".stripe").show();
-            // $(".place").hide();
-        });
+    function disableAccordian() {
+        $('#headingTwo .accordion-button').attr('data-bs-toggle', '');
+        $('#headingTwo .accordion-button').addClass('disabled');
+        $('#headingTwo .accordion-button').attr('aria-disabled', 'true');
 
-        $("#cash").click(function () {
-            $(".stripe").hide();
-            // $(".place").show();
-        });
+        $('#headingThree .accordion-button').attr('data-bs-toggle', '');
+        $('#headingThree .accordion-button').addClass('disabled');
+        $('#headingThree .accordion-button').attr('aria-disabled', 'true');
+    }
 
-        function disableAccordian() {
-            $('#headingTwo .accordion-button').attr('data-bs-toggle', '');
-            $('#headingTwo .accordion-button').addClass('disabled');
-            $('#headingTwo .accordion-button').attr('aria-disabled', 'true');
+    $(".confirm").click(function() {
+        $('#collapseTwo').removeClass(
+            'show');
+        $('#collapseTwo').prev('.accordion-header').find('button')
+            .addClass(
+                'collapsed');
+        $('#collapseTwo').attr('aria-expanded',
+            'false');
 
-            $('#headingThree .accordion-button').attr('data-bs-toggle', '');
-            $('#headingThree .accordion-button').addClass('disabled');
-            $('#headingThree .accordion-button').attr('aria-disabled', 'true');
-        }
+        $('#collapseThree').addClass(
+            'show');
+        $('#collapseThree').prev('.accordion-header').find('button')
+            .removeClass(
+                'collapsed');
+        $('#collapseThree').attr('aria-expanded', 'true');
+    });
 
-        $(".confirm").click(function () {
-            $('#collapseTwo').removeClass(
-                'show');
-            $('#collapseTwo').prev('.accordion-header').find('button')
-                .addClass(
-                    'collapsed');
-            $('#collapseTwo').attr('aria-expanded',
-                'false');
+    $(".place").click(function() {
+        $.ajax({
+            url: '/place-order',
+            type: 'POST',
+            data: {
 
-            $('#collapseThree').addClass(
-                'show');
-            $('#collapseThree').prev('.accordion-header').find('button')
-                .removeClass(
-                    'collapsed');
-            $('#collapseThree').attr('aria-expanded', 'true');
-        });
-
-        $(".place").click(function () {
-            $.ajax({
-                url: '/place-order',
-                type: 'POST',
-                data: {
-
-                },
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function (response) {
-                    window.location.href = '/complete-order';
-                },
-                error: function (xhr, status, error) {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "Error placing order!",
-                    });
-                }
-            });
-        });
-
-
-        $(".save-address").click(function () {
-            firstname = $("#firstname").val();
-            lastname = $("#lastname").val();
-            mobile = $("#mobile").val();
-            address = $("#address").val();
-            pincode = $("#pincode").val();
-            city = $("#city").val();
-            state = $("#state").val();
-            country = $("#country").val();
-
-            $.ajax({
-                url: '/add-address',
-                type: 'POST',
-                data: {
-                    firstname: firstname,
-                    lastname: lastname,
-                    mobile: mobile,
-                    address: address,
-                    pincode: pincode,
-                    city: city,
-                    state: state,
-                    country: country
-                },
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function (response) {
-                    $('#collapseOne').removeClass(
-                        'show');
-                    $('#collapseOne').prev('.accordion-header').find('button')
-                        .addClass(
-                            'collapsed');
-                    $('#collapseOne').attr('aria-expanded',
-                        'false');
-
-                    $('#collapseTwo').addClass(
-                        'show');
-                    $('#collapseTwo').prev('.accordion-header').find('button')
-                        .removeClass(
-                            'collapsed');
-                    $('#collapseTwo').attr('aria-expanded', 'true');
-                },
-                error: function (xhr, status, error) {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "Error while saving address!",
-                    });
-                }
-            });
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                window.location.href = '/complete-order';
+            },
+            error: function(xhr, status, error) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Error placing order!",
+                });
+            }
         });
     });
+
+
+    $(".save-address").click(function() {
+        firstname = $("#firstname").val();
+        lastname = $("#lastname").val();
+        mobile = $("#mobile").val();
+        address = $("#address").val();
+        pincode = $("#pincode").val();
+        city = $("#city").val();
+        state = $("#state").val();
+        country = $("#country").val();
+
+        $.ajax({
+            url: '/add-address',
+            type: 'POST',
+            data: {
+                firstname: firstname,
+                lastname: lastname,
+                mobile: mobile,
+                address: address,
+                pincode: pincode,
+                city: city,
+                state: state,
+                country: country
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                $('#collapseOne').removeClass(
+                    'show');
+                $('#collapseOne').prev('.accordion-header').find('button')
+                    .addClass(
+                        'collapsed');
+                $('#collapseOne').attr('aria-expanded',
+                    'false');
+
+                $('#collapseTwo').addClass(
+                    'show');
+                $('#collapseTwo').prev('.accordion-header').find('button')
+                    .removeClass(
+                        'collapsed');
+                $('#collapseTwo').attr('aria-expanded', 'true');
+            },
+            error: function(xhr, status, error) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Error while saving address!",
+                });
+            }
+        });
+    });
+});
 </script>
 
 <!-- <script>
