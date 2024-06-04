@@ -6,6 +6,7 @@ use Tests\TestCase;
 use App\Models\Book;
 use App\Models\Cart;
 use App\Models\User;
+use App\Models\UserCart;
 use App\Models\CartDetail;
 use Database\Seeders\RolesSeeder;
 use Illuminate\Support\Facades\Session;
@@ -39,16 +40,7 @@ class CartProcessTest extends TestCase
 
     public function testMyCart()
     {
-        $book = Book::factory()->create();
-
-        $cart = Cart::factory()->create(['user_id' => $this->user->id]);
-
-        $cartDetail = CartDetail::factory()->create([
-            'cart_id' => $cart->id,
-            'book_id' => $book->id,
-            'qty' => 2,
-            'total_book_price' => $book->price * 2,
-        ]);
+        $userCarts = UserCart::factory()->count(5)->create(); 
 
         $response = $this->json('GET', '/cart');
 
@@ -57,17 +49,14 @@ class CartProcessTest extends TestCase
 
     public function testCartCount()
     {
-        $cart = Cart::factory()->create(['user_id' => $this->user->id]);
-
-        $cartDetails = CartDetail::factory()->count(3)->create(['cart_id' => $cart->id]);
+        $userCarts = UserCart::factory()->count(5)->create(['user_id' => $this->user->id]); 
 
         $response = $this->json('GET', route('cart.count'));
 
         $response->assertStatus(200)
-                 ->assertJson(['count' => 3]);
+                 ->assertJson(['count' => 5]);
 
-        $cartDetails->each->delete();
-        $cart->delete();
+        $userCarts->each->delete();
 
         $response = $this->json('GET', route('cart.count'));
 
@@ -79,21 +68,7 @@ class CartProcessTest extends TestCase
     {
         $book = Book::factory()->create();
 
-        $cart = Cart::create([
-            'user_id' => $this->user->id,
-            'total_qty' => 1,
-            'total_price' => $book->price,
-        ]);
-
-        $cartDetail = CartDetail::create([
-            'cart_id' => $cart->id,
-            'book_id' => $book->id,
-            'qty' => 1,
-            'price' => $book->price,
-        ]);
-
-        Session::put(
-            'cart.' . $this->user->id,[$book->id => 1]);
+        $cart = UserCart::factory()->create(['user_id' => $this->user->id]);
 
         $response = $this->postJson('/remove-item', [
             'book_id' => $book->id,
@@ -119,22 +94,12 @@ class CartProcessTest extends TestCase
 
         $response->assertStatus(200);
 
-        $this->assertDatabaseHas('carts', [
+        $this->assertDatabaseHas('user_carts', [
             'user_id' => $this->user->id,
-            'total_qty' => 1,
-            'total_price' => 40.00,
-        ]);
-
-        $cart = Cart::where('user_id', $this->user->id)->first();
-
-        $this->assertDatabaseHas('cart_details', [
-            'cart_id' => $cart->id,
-            'book_id' => $book->id,
             'qty' => 2,
-            'total_book_price' => 40.00,
+            'book_id' => $book->id,
         ]);
 
-        $this->assertEquals(Session::get('cart.' . $this->user->id)[$book->id], 2);
     }
 
 }

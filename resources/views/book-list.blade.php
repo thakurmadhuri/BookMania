@@ -14,16 +14,10 @@
                     </div>
                     @endif
 
-                    @php
-                    $user=Auth::user();
-                    $cart = Session::get('cart.'. $user->id, []);
-                    //dd($cart);
-                    @endphp
-
-                    <form action="{{ route('all-books') }}" method="GET" >
+                    <form action="{{ route('all-books') }}" method="GET">
                         <div class="input-group mb-3">
-                            <input type="text" name="q" placeholder="Search books..." class="form-control" id="inputGroupFile04"
-                                aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                            <input type="text" name="q" placeholder="Search books..." class="form-control"
+                                id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
                             <button class="btn btn-outline-secondary" type="submit"
                                 id="inputGroupFileAddon04">Search</button>
                         </div>
@@ -32,30 +26,38 @@
 
                     <div class="row row-cols-1 row-cols-md-3 g-4">
                         @foreach($books as $book)
-
                         <div class="col">
                             <div class="card h-100">
                                 <img src="{{ asset($book->image) }}" class="card-img-top" alt="{{$book->name}}">
                                 <div class="card-body">
                                     <h5 class="card-title fw-bold">{{$book->name}}</h5>
-                                    <p class="fs-5 ">By {{$book->author}}</p>
-                                    <p class="card-text ">{{$book->description}}</p>
+                                    <p class="fs-5">By {{$book->author}}</p>
+                                    <p class="card-text">{{$book->description}}</p>
                                 </div>
                                 <div class="card-footer d-flex justify-content-between">
                                     <small class="text-muted">₹ {{$book->price}}</small>
-                                    <input type="hidden" id="price-{{$book->id }}" value="{{$book->price}}">
-                                    <button class="add btn btn-sm btn-success "
-                                        style="{{isset($cart[$book->id])? 'display:none;': ''  }}"
-                                        data-bookid="{{ $book->id }}"> Add to cart</button>
-                                    <div class="counter" data-bookid="{{ $book->id }}"
-                                        style="{{isset($cart[$book->id])? '': 'display:none;'  }}">
+                                    <input type="hidden" id="price-{{$book->id}}" value="{{$book->price}}">
+
+                                    @php
+                                    $isInCart = false;
+                                    $cartQty = 0;
+                                    foreach ($cart as $c) {
+                                    if ($c['book_id'] == $book->id) {
+                                    $isInCart = true;
+                                    $cartQty = $c['qty'];
+                                    break;
+                                    }
+                                    }
+                                    @endphp
+
+                                    <button class="add btn btn-sm btn-success" style="{{($isInCart)?'display:none':''}}" data-bookid="{{ $book->id }}"> Add to
+                                        cart</button>
+                                    <div class="counter" style="{{($isInCart)?'':'display:none'}}" data-bookid="{{ $book->id }}">
                                         <div class="input-group">
                                             <button class="minus btn btn-sm btn-outline-success"
                                                 data-bookid="{{ $book->id }}" type="button">-</button>
-                                            <input type="text"
-                                                value="{{isset($cart[$book->id])? $cart[$book->id]: ''  }}"
-                                                style="width:30px;" data-bookid="{{ $book->id }}" class="qty ps-1 pe-1"
-                                                disabled>
+                                            <input type="text" value="{{ $cartQty }}" style="width:30px;"
+                                                data-bookid="{{ $book->id }}" class="qty ps-1 pe-1" disabled>
                                             <button class="plus btn btn-sm btn-outline-success"
                                                 data-bookid="{{ $book->id }}" type="button">+</button>
                                         </div>

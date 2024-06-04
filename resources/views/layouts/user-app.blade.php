@@ -48,17 +48,13 @@
                                 href="{{ route('all-books') }}">{{ __('Books') }}</a>
                         </li>
                         <li class="nav-item">
-                            @php
-                            $user=Auth::user();
-                            $cart = Session::get('cart.'. $user->id, []);
-                            $cartLength = count($cart);
-                            @endphp
+                           
                             <a class="nav-link position-relative {{ request()->is('cart*') ? 'active' : '' }}"
                                 href="{{ route('cart') }}">
                                 {{ __('Cart') }}
                                 <span id="cartBadge"
-                                    class="position-absolute top-2 start-100 translate-middle badge rounded-pill bg-danger {{$cartLength == 0 ? "d-none" : ''}}">
-                                    {{$cartLength}}
+                                    class="position-absolute top-2 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                                    
                                 </span>
                             </a>
                         </li>
@@ -117,11 +113,11 @@
             .then(data => {
                 const cartBadge = document.getElementById('cartBadge');
                 // console.log(cartBadge.textContent);
-                if (cartBadge !== null) {
+                if ((cartBadge !== null) && (data.count > 0)) {
                     if (cartBadge.classList.contains('d-none')) {
                         cartBadge.classList.remove('d-none');
                     }
-                    cartBadge.textContent = data.count > 0 ? data.count : '';
+                    cartBadge.textContent = data.count ;
                 }
             })
             .catch(error => console.error('Error fetching cart count:', error));

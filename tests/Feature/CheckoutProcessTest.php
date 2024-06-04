@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Models\Book;
 use Tests\TestCase;
 use App\Models\Cart;
 use App\Models\User;
 use App\Models\Order;
-use App\Models\OrderBooks;
+use App\Models\UserCart;
 use App\Models\CartDetail;
+use App\Models\OrderBooks;
 use App\Models\UserAddress;
 use Database\Seeders\RolesSeeder;
 use Illuminate\Support\Facades\Session;
@@ -44,10 +46,7 @@ class CheckoutProcessTest extends TestCase
 
     public function test_user_can_checkout()
     {
-
-        $cart = Cart::factory()->create(['user_id' => $this->user->id]);
-
-        $cartDetail=CartDetail::factory()->create(['cart_id' => $cart->id]);
+        $cart = UserCart::factory()->create(['user_id' => $this->user->id]);
         
         $response = $this->actingAs($this->user)
             ->get(route('checkout'));
@@ -99,9 +98,8 @@ class CheckoutProcessTest extends TestCase
 
     public function test_place_order()
     {
-        $cart = Cart::factory()->create(['user_id' => $this->user->id]);
-        $cartDetails = CartDetail::factory()->count(2)->create(['cart_id' => $cart->id]);
-
+        $book = Book::factory()->create();
+        $cart = UserCart::factory()->create(['user_id' => $this->user->id,'book_id' => $book->id]);
         $address = UserAddress::factory()->create(['user_id' => $this->user->id]);
 
         $response = $this->actingAs($this->user)
@@ -113,14 +111,12 @@ class CheckoutProcessTest extends TestCase
             'user_id' => $this->user->id,
         ]);
 
-        foreach ($cartDetails as $cartDetail) {
+        foreach ($cart as $cartDetail) {
             $this->assertDatabaseHas('order_books', [
                 'order_id' => Order::latest()->first()->id,
-                'book_id' => $cartDetail->book_id,
+                'book_id' => $book->id,
             ]);
         }
-
-        $this->assertNull(Session::get('cart' . $this->user->id));
 
     }
 

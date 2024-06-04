@@ -182,8 +182,6 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
-        Askedio\SoftCascade\Providers\GenericServiceProvider::class,
-
         /*
          * Package Service Providers...
          */

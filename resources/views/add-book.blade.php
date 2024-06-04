@@ -26,7 +26,7 @@
                             <div class="col-md-6">
                                 <img src="{{ isset($book) ? asset($book->image) : '#' }}" id="book-img-tag" class="mb-2" width="200px" />
                                 <input id="image" type="file" class="form-control @error('image') is-invalid @enderror"
-                                    name="image" value="" required
+                                    name="image" value="{{ isset($book) ? $book->image : old('image') }}" required
                                     autocomplete="image" autofocus>
                                 @error('image')
                                 <span class="invalid-feedback" role="alert">

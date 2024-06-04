@@ -24,26 +24,30 @@
                         </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
-                                @foreach($order->books as $book)
+                                @php
+                                
+                                //dd($order->books);
+                                @endphp
+                                @foreach($order->books as $item)
                                 <div class="card mb-3">
                                     <div class="row g-0">
                                         <div class="col-md-4">
-                                            <img src="{{ asset($book->image) }}" class="img-fluid rounded-start"
+                                            <img src="{{ asset($item->book->image) }}" class="img-fluid rounded-start"
                                                 alt="...">
                                         </div>
                                         <div class="col-md-8">
                                             <div class="card-body">
-                                                <h5 class="card-title">{{$book->name}}</h5>
-                                                <p class="card-text">By {{$book->author}}</p>
-                                                <p class="card-text">{{$book->description}}</p>
+                                                <h5 class="card-title">{{$item->book->name}}</h5>
+                                                <p class="card-text">By {{$item->book->author}}</p>
+                                                <p class="card-text">{{$item->book->description}}</p>
                                                 <div class="d-flex justify-content-between">
                                                     <p class="card-text">
                                                         <small class="text-muted">Quantity =
-                                                            {{$book->qty}}</small>
+                                                            {{$item->qty}}</small>
                                                     </p>
                                                     <p class="card-text">
                                                         <small class="text-muted">Amount =
-                                                            {{$book->total_book_price}}</small>
+                                                            {{$item->total_book_price}}</small>
                                                     </p>
                                                 </div>
                                             </div>
