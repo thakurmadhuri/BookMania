@@ -3,21 +3,38 @@
 namespace App\Models;
 
 use App\Models\Order;
+use App\Models\UserCart;
 use App\Models\UserAddress;
-use Dyrynda\Database\Support\CascadeSoftDeletes;
+use Laravel\Cashier\Billable;
 use Laravel\Passport\HasApiTokens;
+use Spatie\Activitylog\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
+use Venturecraft\Revisionable\RevisionableTrait;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasRoles, CascadeSoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasRoles, CascadeSoftDeletes, Billable, RevisionableTrait;
 
-    protected $cascadeDeletes = ['orders','carts','addresses'];
+    protected $revisionEnabled = true;
+    protected $revisionCleanup = true;
+    protected $historyLimit = 500; 
+    protected $revisionForceDeleteEnabled = true;
+
+    protected $dontKeepRevisionOf = [
+        'updated_at',
+        'created_at'
+    ];
+
+
+    protected $cascadeDeletes = ['orders', 'carts', 'addresses'];
 
 
     protected $guard_name = 'api';
@@ -52,18 +69,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function orders():HasMany
+    public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
     }
 
-    public function carts():HasMany
+    public function carts(): HasMany
     {
-        return $this->hasMany(Cart::class);
+        return $this->hasMany(UserCart::class);
     }
 
-    public function addresses():HasMany
+    public function addresses(): HasMany
     {
         return $this->hasMany(UserAddress::class);
     }
+
+
 }

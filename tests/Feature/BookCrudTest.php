@@ -40,39 +40,39 @@ class BookCrudTest extends TestCase
     }
 
     public function test_can_create_book()
-{
-    Storage::fake('public');
+    {
+        Storage::fake('public');
 
-    $file = UploadedFile::fake()->image('images/book1.jpg');
+        $file = UploadedFile::fake()->image('images/book1.jpg');
 
-    Category::factory()->create();
+        Category::factory()->create();
 
-    $response = $this->post('/store-book', [
-        'image' => $file,
-        'name' => 'Test Book',
-        'description' => 'Test Description',
-        'price' => 10.50,
-        'author' => 'Test Author',
-        'category_id' => 1,
-    ], [
-        '_token' => csrf_token(),
-    ]);
+        $response = $this->post('/store-book', [
+            'image' => $file,
+            'name' => 'Test Book',
+            'description' => 'Test Description',
+            'price' => 10.50,
+            'author' => 'Test Author',
+            'category_id' => 1,
+        ], [
+            '_token' => csrf_token(),
+        ]);
 
-    $response->assertStatus(302);
+        $response->assertStatus(302);
 
-    $time=time();
-    $this->assertDatabaseHas('books', [
-        'image' => '/images/'.$time.'.jpg',
-        'name' => 'Test Book',
-        'description' => 'Test Description',
-        'price' => 10.50,
-        'author' => 'Test Author',
-        'category_id' => 1,
-    ]);
+        $time = time();
+        $this->assertDatabaseHas('books', [
+            'image' => '/images/' . $time . '.jpg',
+            'name' => 'Test Book',
+            'description' => 'Test Description',
+            'price' => 10.50,
+            'author' => 'Test Author',
+            'category_id' => 1,
+        ]);
 
-    $response->assertRedirect('/books')
-        ->assertSessionHas('success', 'Book added successfully..!');
-}
+        $response->assertRedirect('/books')
+            ->assertSessionHas('success', 'Book added successfully..!');
+    }
 
     public function test_can_edit_book()
     {
@@ -97,7 +97,7 @@ class BookCrudTest extends TestCase
         $book = Book::factory()->create();
 
         $data = [
-            'image'=>'images/book1.jpg',
+            'image' => 'images/book1.jpg',
             'name' => 'Updated Book Name',
             'description' => 'Updated Book Description',
             'price' => 20.00,
@@ -128,6 +128,6 @@ class BookCrudTest extends TestCase
         $response = $this->get(route('delete-book', ['id' => $book->id]));
         $response->assertStatus(302);
         $response->assertRedirect('books')
-            ->assertSessionHas('success', 'Deleted successfully..!');  
+            ->assertSessionHas('success', 'Deleted successfully..!');
     }
 }

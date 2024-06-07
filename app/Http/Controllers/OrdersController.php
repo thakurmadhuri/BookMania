@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Stripe\Charge;
+use App\Models\UserCart;
 use Stripe\Stripe;
 use App\Models\Cart;
-use Stripe\Customer;
+use App\Models\User;
 use App\Models\Order;
+use Stripe\StripeClient;
 use App\Models\OrderBook;
+use Stripe\PaymentIntent;
 use App\Models\UserAddress;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -32,14 +34,11 @@ class OrdersController extends Controller
 
         DB::beginTransaction();
         try {
-            $cart = Cart::with([
-                'cartDetails' => function ($query) {
-                    $query->join('books', 'cart_details.book_id', '=', 'books.id');
-                },
-            ])->where("user_id", $user->id)->first();
+            $cart = UserCart::where("user_id", $user->id)->get();
+            $userCart = new UserCart();
 
             $address = UserAddress::where("user_id", $user->id)->first();
-            if(! $address) {
+            if (!$address) {
                 return response()->json(['message' => "address not found"], 404);
             }
 
@@ -52,8 +51,8 @@ class OrdersController extends Controller
 
             $order = Order::create([
                 'order_id' => $id,
-                'total_qty' => $cart->total_qty,
-                'total_price' => $cart->total_price,
+                'total_qty' => $userCart->totalQty(),
+                'total_price' => $userCart->totalPrice(),
                 'payment_method' => 'CASH',
                 'user_id' => $user->id,
                 'first_name' => $address->first_name,
@@ -66,76 +65,90 @@ class OrdersController extends Controller
                 'country' => $address->country,
             ]);
 
-            $total = 0;
-            foreach ($cart->cartDetails as $cartdetail) {
-                $sub_total = $cartdetail->qty * $cartdetail->price;
-                $total = $total + $sub_total;
-
+            foreach ($cart as $item) {
                 OrderBook::create([
                     'order_id' => $order->id,
-                    'book_id' => $cartdetail->book_id,
-                    'qty' => $cartdetail->qty,
-                    'total_book_price' => $sub_total,
+                    'book_id' => $item->book_id,
+                    'qty' => $item->qty,
+                    'total_book_price' => $item->countPrice(),
                 ]);
-
-                $cartSession = Session::get('cart.' . $user->id, []);
-                unset($cartSession[$cartdetail->book_id]);
-                Session::put('cart.' . $user->id, $cartSession);
             }
 
-            $order->total_price = $total;
-            $order->save();
+            UserCart::where("user_id", $user->id)->delete();
 
-            $cart->delete();
-
-            Session::forget('cart' . $user->id);
+            activity('Order Activity')->event('Created')
+                ->withProperties([
+                    'order_id' => $id,
+                    'total_qty' => $userCart->totalQty(),
+                    'total_price' => $userCart->totalPrice(),
+                    'payment_method' => 'CASH',
+                    'user_id' => $user->id,
+                    'first_name' => $address->first_name,
+                    'last_name' => $address->last_name,
+                    'address' => $address->address,
+                    'pincode' => $address->pincode,
+                    'mobile' => $address->mobile,
+                    'city' => $address->city,
+                    'state' => $address->state,
+                    'country' => $address->country,
+                ])
+                ->performedOn($order)
+                ->causedBy(auth()->user())
+                ->log('New Order Created');
 
             DB::commit();
             return response()->json(['message' => "Order placed successfully..!"], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Order placement failed: " . $e->getMessage());
-            return response()->json(["message" => "Error while placing order","error"=>$e->getMessage()], 500);
+            return response()->json(["message" => "Error while placing order", "error" => $e->getMessage()], 500);
         }
     }
 
     public function stripeOrder(Request $request)
     {
-        $user = auth()->user();
+        $auth = auth()->user();
 
         DB::beginTransaction();
         try {
             Stripe::setApiKey(env('STRIPE_SECRET'));
 
-            $amount = $request->input('amount') * 100;
-            $email = $request->input('email');
+            $user = User::where('email', $auth->email)->firstOrFail();
 
-            $customer = Customer::create([
-                'email' => $email,
-                'source' => $request->input('stripeToken'),
-            ]);
-
-            $charge = Charge::create([
-                'customer' => $customer->id,
+            $user->createOrGetStripeCustomer();
+            // $paymentMethod = $user->addPaymentMethod($request->paymentMethodId);
+            // $user->updateDefaultPaymentMethod($paymentMethod->id);
+            $amount = (int) ($request->amount);
+            $paymentIntent = PaymentIntent::create([
                 'amount' => $amount,
                 'currency' => 'usd',
+                'payment_method' => $request->paymentMethodId,
+                'confirmation_method' => 'automatic',
+                'confirm' => true,
+                'return_url' => route('place-order'),
             ]);
+            $c = $paymentIntent->confirm(
+                [
+                    'payment_method' => $request->paymentMethodId,
+                    'return_url' => route('place-order'),
+                ]
+            );
+
+            $this->placeOrder($request);
 
             DB::commit();
             return response()->json(['message' => "Order placed successfully..!"], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Order placement failed: " . $e->getMessage());
-            return response()->json(["message" => "Error while placing order"], 500);
+            return response()->json(["message" => "Error while placing order", 'error' => $e->getMessage()], 500);
         }
     }
 
     public function getLastOrder()
     {
         $user = auth()->user();
-        $order = Order::with(
-            'books'
-        )->where("user_id", $user->id)->latest()->first();
+        $order = Order::where("user_id", $user->id)->latest()->first();
 
         return $order;
     }

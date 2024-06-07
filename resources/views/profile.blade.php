@@ -13,6 +13,8 @@
                         {{ session('status') }}
                     </div>
                     @endif
+
+                    @if(isset($user))
                     <div class="row">
                         <div class="col-3">
                             <p class="text-end fw-bold">
@@ -67,6 +69,8 @@
                             @endforeach
                         </tbody>
                     </table>
+
+                    @endif
                 </div>
             </div>
         </div>

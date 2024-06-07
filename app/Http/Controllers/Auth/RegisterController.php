@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\RegistersUsers;
 
 class RegisterController extends Controller
 {
@@ -75,14 +76,28 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        try {
+            DB::beginTransaction();
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]);
 
-        $user->assignRole('user');
-
-        return $user;
+            $user->assignRole('user');
+            DB::commit();
+            activity('User Activity')->event('Created')
+                ->withProperties([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ])
+                ->performedOn($user)
+                ->causedBy($user)
+                ->log('New User Created');
+            return $user;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back(500, ['error' => $e->getMessage()]);
+        }
     }
 }

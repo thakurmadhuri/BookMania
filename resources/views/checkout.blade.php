@@ -193,27 +193,27 @@
                                     @endphp
 
                                     @foreach($cart as $item)
-                                    @foreach($item['cartDetails'] as $book)
+                                   
                                     @php
-                                    $subtotal = $book->price * $book->qty;
+                                    $subtotal = $item->countPrice();
                                     $totalAmount += $subtotal;
                                     @endphp
 
                                     <div class="card mb-3">
                                         <div class="row g-0">
                                             <div class="col-md-4">
-                                                <img src="{{ asset($book->image) }}" class="img-fluid rounded-start"
+                                                <img src="{{ asset($item->book->image) }}" class="img-fluid rounded-start"
                                                     alt="...">
                                             </div>
                                             <div class="col-md-8">
                                                 <div class="card-body">
-                                                    <h5 class="card-title">{{$book->name}}</h5>
-                                                    <p class="card-text">By {{$book->author}}</p>
-                                                    <p class="card-text">{{$book->description}}</p>
+                                                <h5 class="card-title">{{$item->book->name}}</h5>
+                                                <p class="card-text">By {{$item->book->author}}</p>
+                                                <p class="card-text">{{$item->book->description}}</p>
                                                     <div class="d-flex justify-content-between">
                                                         <p class="card-text">
                                                             <small class="text-muted">Quantity =
-                                                                {{$book->qty}}</small>
+                                                                {{$item->qty}}</small>
                                                         </p>
                                                         <p class="card-text">
                                                             <small class="text-muted">Total Amount =
@@ -224,8 +224,7 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    @endforeach
+                                    
                                     @endforeach
 
                                     <div class="d-flex justify-content-center">
@@ -265,8 +264,8 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="stripe">
-                                        <form action="{{route('stripe-order')}}" method="POST" id="payment-form">
+                                    <div >
+                                        <form action="{{ route('stripe-order') }}" method="POST" id="payment-form">
                                             {{ csrf_field() }}
                                             <div class="row mb-3">
                                                 <label for="amount"
@@ -274,7 +273,7 @@
 
                                                 <div class="col-md-6">
                                                     <input type="text" name="amount" value="{{$totalAmount}}"
-                                                        id="amount" class="form-control" readonly>
+                                                        id="amount" class="form-control">
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
@@ -289,21 +288,25 @@
                                                 <label for="card-element">
                                                     Credit or debit card
                                                 </label>
-                                                <div id="card-element ">
+                                                <div id="card-element">
                                                 </div>
                                                 <div id="card-errors" role="alert"></div>
                                             </div>
+                                            <button type="button" class="btn btn-success mb-2 submit">Submit
+                                                payment</button>
                                         </form>
                                     </div>
                                 </div>
 
                                 <div class="d-flex justify-content-center ">
-                                    <br><button class="btn btn-success mb-2 place"> Place
+                                    <br><button id="submit" class="btn btn-success mb-2 place"> Place
                                         Order</button>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+
                 </div>
 
             </div>
@@ -315,18 +318,95 @@
 
 <script>
 $(document).ready(function() {
+    const stripe = Stripe(
+        'pk_test_51PJXwlSBxW9JUnnDOk0T6AujlQGLn3MhDHz6CnWXjqrD7w2cHIYRKCDyTlep04D6EHFjq3WJBQBSk4UGSbLvsuNJ006KvS8ZiA'
+    );
+    const clientSecret =
+        'sk_test_51PJXwlSBxW9JUnnDVLVof7QD2vuxGEk0kiRpSYln5WX093L9OnnMQnul099Caqb0h2Hjmjtl7xS26Y3nZSytJxVd00JLaUwUsk';
+    const elements = stripe.elements();
 
-    $(".stripe").hide();
+    const style = {
+        base: {
+            color: '#32325d',
+            fontFamily: 'Arial, sans-serif',
+            fontSmoothing: 'antialiased',
+            fontSize: '16px',
+            '::placeholder': {
+                color: '#aab7c4'
+            }
+        },
+        invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a'
+        }
+    };
 
-    $("#online").click(function() {
-        $(".stripe").show();
-        // $(".place").hide();
+    const card = elements.create('card', {
+        style: style
     });
 
-    $("#cash").click(function() {
-        $(".stripe").hide();
-        // $(".place").show();
+    card.mount('#card-element');
+
+    card.on('change', event => {
+        const displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
     });
+
+    $('.submit').on('click', async function(event) {
+
+        event.preventDefault();
+        const {
+            paymentMethod,
+            error
+        } = await stripe.createPaymentMethod({
+            type: 'card',
+            card: card,
+            billing_details: {
+                email: $('#email').val(),
+                // amount: document.getElementById('amount').value,
+            },
+        });
+        if (error) {
+            $('#card-errors').text(error.message);
+        }
+
+        var options = {
+            email: document.getElementById('email').value,
+        }
+
+        const {
+            token,
+            error1
+        } = await stripe.createToken(card, options);
+
+        if (error1) {
+            $('#card-errors').text(error.message);
+        } else {
+            stripeTokenHandler(token, paymentMethod);
+        }
+
+    });
+
+    function stripeTokenHandler(token, paymentMethod) {
+        var form = document.getElementById('payment-form');
+        var hiddenInput = document.createElement('input');
+        hiddenInput.setAttribute('type', 'hidden');
+        hiddenInput.setAttribute('name', 'stripeToken');
+        hiddenInput.setAttribute('value', token.id);
+        form.appendChild(hiddenInput);
+
+        var hiddenInput1 = document.createElement('input');
+        hiddenInput1.setAttribute('type', 'hidden');
+        hiddenInput1.setAttribute('name', 'paymentMethodId');
+        hiddenInput1.setAttribute('value', paymentMethod.id);
+        form.appendChild(hiddenInput1);
+
+        form.submit();
+    }
 
     function disableAccordian() {
         $('#headingTwo .accordion-button').attr('data-bs-toggle', '');
@@ -432,69 +512,4 @@ $(document).ready(function() {
     });
 });
 </script>
-
-<!-- <script>
-const stripe = Stripe(
-    'pk_test_51PJXwlSBxW9JUnnDOk0T6AujlQGLn3MhDHz6CnWXjqrD7w2cHIYRKCDyTlep04D6EHFjq3WJBQBSk4UGSbLvsuNJ006KvS8ZiA');
-
-const elements = stripe.elements();
-
-const style = {
-    base: {
-        color: '#32325d',
-        fontFamily: 'Arial, sans-serif',
-        fontSmoothing: 'antialiased',
-        fontSize: '16px',
-        '::placeholder': {
-            color: '#aab7c4'
-        }
-    },
-    invalid: {
-        color: '#fa755a',
-        iconColor: '#fa755a'
-    }
-};
-
-const card = elements.create('card', {
-    style: style
-});
-
-card.mount('#card-element');
-
-card.on('change', event => {
-    const displayError = document.getElementById('card-errors');
-    if (event.error) {
-        displayError.textContent = event.error.message;
-    } else {
-        displayError.textContent = '';
-    }
-});
-
-const form = document.getElementById('submit');
-form.addEventListener('click', async event => {
-    event.preventDefault();
-
-    const {
-        token,
-        error
-    } = await stripe.createToken(card);
-
-    if (error) {
-        const errorElement = document.getElementById('card-errors');
-        errorElement.textContent = error.message;
-    } else {
-        stripeTokenHandler(token);
-    }
-});
-
-function stripeTokenHandler(token) {
-    const hiddenInput = document.createElement('input');
-    hiddenInput.setAttribute('type', 'hidden');
-    hiddenInput.setAttribute('name', 'stripeToken');
-    hiddenInput.setAttribute('value', token.id);
-    document.body.appendChild(hiddenInput);
-
-    document.body.submit();
-}
-</script> -->
 @endsection

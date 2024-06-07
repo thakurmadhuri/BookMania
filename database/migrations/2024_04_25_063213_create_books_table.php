@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('books', function (Blueprint $table) {
             $table->id();
+            $table->string('image')->default('images/book1.jpg');
             $table->string('name');
             $table->text('description');
             $table->decimal('price', 10, 2);
@@ -23,6 +24,7 @@ return new class extends Migration {
                 ->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
+            $table->unique(['name', 'category_id']);
         });
     }
 
