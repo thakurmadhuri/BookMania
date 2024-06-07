@@ -39,7 +39,7 @@ class CategoriesController extends Controller
         DB::beginTransaction();
         try {
             $validated = Validator::make($request->all(), [
-                'name' => 'required|max:255|unique',
+                'name' => 'required|max:255|unique:categories,name',
             ]);
 
             if ($validated->fails()) {
@@ -62,7 +62,7 @@ class CategoriesController extends Controller
             return redirect("categories")->with("success", "Category created successfully..!");
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect("categories")->with("error", $e->getMessage());
+            return redirect()->back()->with("error", $e->getMessage());
         }
     }
 
@@ -70,7 +70,7 @@ class CategoriesController extends Controller
     {
         $category = $this->getOne($id);
         if (!$category) {
-            return response()->json(['message' => 'Book not found'], 404);
+            return redirect()->back()->with('error', 'Book not found');
         }
 
         return view("edit-category", compact("category"));
@@ -82,7 +82,7 @@ class CategoriesController extends Controller
         try {
             $cat = $this->getOne($id);
             if (!$cat) {
-                return redirect("categories")->with("error", "Category not found..!");
+                return redirect()->back()->with("error", "Category not found..!");
             }
 
             $cat->name = $request->name;
@@ -100,7 +100,7 @@ class CategoriesController extends Controller
             return redirect("categories")->with("success", "Updated successfully..!");
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect("categories")->with("error", $e->getMessage());
+            return redirect()->back()->with("error", $e->getMessage());
         }
     }
 
@@ -110,7 +110,7 @@ class CategoriesController extends Controller
         try {
             $cat = $this->getOne($id);
             if (!$cat) {
-                return redirect("categories")->with("error", "Category not found..!");
+                return redirect()->back()->with("error", "Category not found..!");
             }
 
             $cat->delete();
@@ -118,7 +118,7 @@ class CategoriesController extends Controller
             return redirect("categories")->with("success", "Deleted successfully..!");
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect("categories")->with("error", $e->getMessage());
+            return redirect()->back()->with("error", $e->getMessage());
         }
     }
 

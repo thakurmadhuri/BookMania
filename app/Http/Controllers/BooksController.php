@@ -64,6 +64,15 @@ class BooksController extends Controller
     {
         DB::beginTransaction();
         try {
+
+            $exists = Book::where('name', $request->input('name'))
+            ->where('category_id', $request->input('category_id'))
+            ->exists();
+
+            if($exists){
+                return redirect()->back()->withErrors(['name'=> 'The name already exist for this category.'])->withInput();
+            }
+
             $validated = Validator::make($request->all(), [
                 'name' => 'required|max:255',
                 'description' => 'required',

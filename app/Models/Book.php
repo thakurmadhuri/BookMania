@@ -55,6 +55,6 @@ class Book extends Model
 
     public function uniqueIds(): array
     {
-        return ['name', 'book_id'];
+        return ['name', 'category_id'];
     }
 }
