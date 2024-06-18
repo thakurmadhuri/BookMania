@@ -18,8 +18,8 @@ class RolesSeeder extends Seeder
         $user = Role::create(['name' => 'user',]);
         $admin = Role::create(['name' => 'admin']);
 
-       Role::create(['guard_name' => 'api', 'name' => 'user']);
-       Role::create(['guard_name' => 'api', 'name' => 'admin']);
+        Role::create(['name' => 'admin', 'guard_name' => 'api']);
+        Role::create(['name' => 'user', 'guard_name' => 'api']);
 
         $permission1 = Permission::create(['name' => 'view book']);
         $permission2 = Permission::create(['name' => 'edit book']);
